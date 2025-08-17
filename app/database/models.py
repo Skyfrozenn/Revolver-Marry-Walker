@@ -103,7 +103,7 @@ class Product(Base):
     count : Mapped[int] = mapped_column(default = 1)
 
     #внещний ключ подкатегории 
-    sub_category_id : Mapped[int] = mapped_column(ForeignKey("subcategories.id"))  
+    sub_category_id : Mapped[int] = mapped_column(ForeignKey("subcategories.id"), nullable = True) #для карточек они будут без подкатегорий
 
     #связи корзина, история покупок, подкатегория
     cart : Mapped[list["Cart"]] = relationship(back_populates = "product_cart")
