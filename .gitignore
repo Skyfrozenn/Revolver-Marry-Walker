@@ -1,0 +1,6 @@
+database.db
+.env
+venv
+venv/
+*db
+*env

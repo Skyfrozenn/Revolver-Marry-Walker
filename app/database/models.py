@@ -1,14 +1,18 @@
-from sqlalchemy import ForeignKey, create_engine, func, BINARY
+from sqlalchemy import ForeignKey, create_engine, func, BINARY, select, LargeBinary
 from sqlalchemy.orm import sessionmaker, DeclarativeBase, Mapped, mapped_column, relationship
 
 from datetime import datetime
+
+from typing import Optional
+
 
 
 engine = create_engine("sqlite:///datebase.db", echo=True) #движок
 
 Session = sessionmaker(engine) #фабрика сессий
 
-Base = DeclarativeBase() #класс для таблиц 
+class Base(DeclarativeBase):
+    pass
 
 
 class User(Base):
@@ -17,8 +21,8 @@ class User(Base):
     id:Mapped[int] = mapped_column(primary_key = True)
     name : Mapped[str]
     password : Mapped[str]
-    role : Mapped[str] = mapped_column(default = "creator")
-    photo_uploads : Mapped[BINARY] = mapped_column(nullable = True)
+    role : Mapped[str] = mapped_column(default = "user")
+    photo_uploads : Mapped[Optional[bytes]] = mapped_column(LargeBinary,  nullable = True)
     join : Mapped[datetime] = mapped_column(server_default = func.now())
 
     #ебучие связи 
@@ -67,8 +71,8 @@ class Cart(Base):
     
 
     #связь с юзером и товарами
-    user_cart = Mapped[list["User"]] = relationship(back_populates = "cart")
-    product_cart = Mapped[list["Product"]] = relationship(back_populates = "cart")
+    user_cart : Mapped[list["User"]] = relationship(back_populates = "cart")
+    product_cart : Mapped[list["Product"]] = relationship(back_populates = "cart")
     
     
 
@@ -86,8 +90,8 @@ class Purchase_history(Base):
     
 
     #связь с юзером и товарами
-    user_purchases = Mapped[list["User"]] = relationship(back_populates = "order_item")
-    product_cart = Mapped[list["Product"]] = relationship(back_populates = "order_item")
+    user_purchases : Mapped[list["User"]] = relationship(back_populates = "order_item")
+    purchased_products : Mapped[list["Product"]] = relationship(back_populates = "order_item")
     
 
 
@@ -97,7 +101,7 @@ class Product(Base):
     id : Mapped[int] = mapped_column(primary_key = True)
     title : Mapped[str]
     descriprion : Mapped[str]
-    avatar : Mapped[BINARY] = mapped_column(nullable = True)
+    avatar : Mapped[Optional[bytes]] = mapped_column(LargeBinary, nullable = True)
     date_add : Mapped[datetime] = mapped_column(server_default = func.now())
     price : Mapped[int]
     count : Mapped[int] = mapped_column(default = 1)
@@ -112,8 +116,8 @@ class Product(Base):
 
 
 
-def creat_table():
-    Base.metadata.create_all(engine)
+#def creat_table():
+    #Base.metadata.create_all(engine)
 
 #def migrate():
     #Base.metadata.drop_all(engine)
