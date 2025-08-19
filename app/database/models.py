@@ -119,6 +119,7 @@ class Product(Base):
 #def creat_table():
     #Base.metadata.create_all(engine)
 
-#def migrate():
-    #Base.metadata.drop_all(engine)
-    #Base.metadata.create_all(engine)
+def migrate():
+    Base.metadata.drop_all(engine)
+    Base.metadata.create_all(engine)
+ 

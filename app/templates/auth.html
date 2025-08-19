@@ -3,45 +3,105 @@
 <head>
     <meta charset="UTF-8">
     <title>Revolver Marry_Walker | Регистрация</title>
+    <style>
+        /* Стили для флеш-сообщений */
+        .flash-messages {
+            margin: 20px auto;
+            max-width: 600px;
+        }
+        
+        .flash-message {
+            background: #ff4444;
+            color: white;
+            padding: 15px 20px;
+            margin: 10px 0;
+            border: 2px solid #cc0000;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            opacity: 1;
+            transition: opacity 0.5s ease-in-out;
+            text-align: center;
+            font-weight: bold;
+        }
+        
+        .flash-message.fade-out {
+            opacity: 0;
+        }
+    </style>
 </head>
-<h1>Revolver Marry Walker</h1>
-<hr>
-
 <body>
+    <!-- Контейнер для флеш-сообщений В САМОМ ВЕРХУ -->
+    <div class="flash-messages">
+        {% with messages = get_flashed_messages() %}
+            {% if messages %}
+                {% for message in messages %}
+                    <div class="flash-message" id="flash-{{ loop.index }}">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+    </div>
+
+    <h1>Revolver Marry Walker</h1>
+    <hr>
     
     <form method="post" action="{{url_for('reg')}}">
-        {{  form.hidden_tag() }} <!--Токен авторизации-->
+        {{ form.hidden_tag() }} <!--Токен авторизации-->
 
         <!--Поля ввода логина-->
+        {{form.username.label}}
+        <br>
         {{form.username(placeholder = "Введите имя")}}
+        <br>
 
         {% if form.username.errors %}
-            {% for error in errors %}
-                {{ error }}
+            {% for error in form.username.errors %}
+                <div class="flash-message">{{ error }}</div>
             {% endfor %}
         {% endif %}
 
         <!--Поле ввода пароля-->
         {{form.password(placeholder = "Введите пароль")}}
+        <br>
 
         {% if form.password.errors %}
-            {% for error in errors %}
-                {{ error }}
+            {% for error in form.password.errors %}
+                <div class="flash-message">{{ error }}</div>
             {% endfor %}
         {% endif %}
 
         <!--Кнопка отправить-->
         {{form.submit()}}
-
-
-        
     </form>
 
+    <br><br>
+    Уже есть аккаунт?<br>
+    <form method="post" action="/entrance">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        <input type="text" name="username" placeholder="Введите имя"><br>
+        <input type="password" name="password" placeholder="Введите пароль"><br>
+        <button type="submit">Войти</button><br>
+    </form>
 
-
+    <script>
+        // Автоматическое исчезновение флеш-сообщений через 5 секунд
+        document.addEventListener('DOMContentLoaded', function() {
+            const flashMessages = document.querySelectorAll('.flash-message');
+            
+            flashMessages.forEach((message, index) => {
+                // Устанавливаем таймер на исчезновение
+                setTimeout(() => {
+                    message.classList.add('fade-out');
+                    
+                    // Полное удаление из DOM после анимации
+                    setTimeout(() => {
+                        message.remove();
+                    }, 500); // Время совпадает с transition
+                }, 5000); // 5 секунд
+            });
+        });
+    </script>
 </body>
-
-
-
-
 </html>
+ 
