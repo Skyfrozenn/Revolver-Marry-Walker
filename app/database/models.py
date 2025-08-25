@@ -1,5 +1,5 @@
 from sqlalchemy import ForeignKey, create_engine, func, BINARY, select, LargeBinary
-from sqlalchemy.orm import sessionmaker, DeclarativeBase, Mapped, mapped_column, relationship
+from sqlalchemy.orm import sessionmaker, DeclarativeBase, Mapped, mapped_column, relationship, selectinload, joinedload
 
 from datetime import datetime
 
@@ -22,12 +22,12 @@ class User(Base):
     name : Mapped[str]
     password : Mapped[str]
     role : Mapped[str] = mapped_column(default = "user")
-    photo_uploads : Mapped[Optional[bytes]] = mapped_column(LargeBinary,  nullable = True)
+    photo_uploads : Mapped[str] = mapped_column(nullable = True)
     join : Mapped[datetime] = mapped_column(server_default = func.now())
 
     #ебучие связи 
-    cart : Mapped[list["Cart"]] = relationship(back_populates = "user_cart", cascade = "all, delete-orphan", lazy = "joined")
-    order_item : Mapped[list["Purchase_history"]] = relationship(back_populates = "user_purchases", cascade = "all, delete-orphan", lazy = "joined")
+    cart : Mapped[list["Cart"]] = relationship(back_populates = "user_cart", cascade = "all, delete-orphan")
+    order_item : Mapped[list["Purchase_history"]] = relationship(back_populates = "user_purchases", cascade = "all, delete-orphan", )
 
     
 
@@ -40,7 +40,7 @@ class Category(Base):
     id:Mapped[int] = mapped_column(primary_key = True)
     title : Mapped[str]
 
-    sub_category : Mapped[list["Subcategory"]] = relationship(back_populates = "parent_categories", cascade = "all, delete-orphan", lazy = "joined")
+    sub_category : Mapped[list["Subcategory"]] = relationship(back_populates = "parent_categories", cascade = "all, delete-orphan")
 
 
 
@@ -101,10 +101,10 @@ class Product(Base):
     id : Mapped[int] = mapped_column(primary_key = True)
     title : Mapped[str]
     descriprion : Mapped[str]
-    avatar : Mapped[Optional[bytes]] = mapped_column(LargeBinary, nullable = True)
+    avatar : Mapped[str] = mapped_column( nullable = True)
     date_add : Mapped[datetime] = mapped_column(server_default = func.now())
     price : Mapped[int]
-    count : Mapped[int] = mapped_column(default = 1)
+    count : Mapped[int] 
 
     #внещний ключ подкатегории 
     sub_category_id : Mapped[int] = mapped_column(ForeignKey("subcategories.id"), nullable = True) #для карточек они будут без подкатегорий
@@ -119,7 +119,9 @@ class Product(Base):
 #def creat_table():
     #Base.metadata.create_all(engine)
 
-def migrate():
-    Base.metadata.drop_all(engine)
-    Base.metadata.create_all(engine)
+#def migrate():
+    #Base.metadata.drop_all(engine)
+    #Base.metadata.create_all(engine)
  
+
+

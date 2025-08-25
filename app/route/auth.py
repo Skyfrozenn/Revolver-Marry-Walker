@@ -16,7 +16,7 @@ from flask_wtf import FlaskForm #базовый класс форм
 from wtforms import StringField, PasswordField, SubmitField #поля формы
 
 from wtforms.validators import DataRequired, Length, ValidationError #валидаторы проверки
-
+ 
 
 
 
@@ -25,7 +25,7 @@ from .. import app
 from ..database import User, Session, select
 
 from argon2 import PasswordHasher
-from argon2.exceptions import  InvalidHashError
+from argon2.exceptions import  InvalidHashError, VerifyMismatchError
 
 
 ph = PasswordHasher(time_cost=3, memory_cost=66536, parallelism=4)
@@ -36,7 +36,7 @@ ph = PasswordHasher(time_cost=3, memory_cost=66536, parallelism=4)
 
 login_manager = LoginManager() #наш обьект логина главный
 login_manager.init_app(app)
-login_manager.login_view = "auth"
+login_manager.login_view = "home_page"
 
 class Login(UserMixin): #паспорт 
     def __init__(self,id,name,role):
@@ -150,12 +150,16 @@ def identif():
 
             try:
                 ph.verify(user.password, password)
-                return render_template("cards.html")
+                user_obj = Login(id = user.id, name = user.name, role = user.role)
+                login_user(user_obj)
+                return redirect(url_for('watch_cards'))
             
-            except InvalidHashError:
+            except VerifyMismatchError:
                 flash("Неверный пароль!")
                 return redirect(url_for("home_page"))
             
         else:
             flash("Пользователь не найден")
             return redirect(url_for("home_page"))
+
+

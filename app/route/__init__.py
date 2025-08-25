@@ -1,1 +1,2 @@
-from . import auth
+from . import auth, profile, add_product
+ 

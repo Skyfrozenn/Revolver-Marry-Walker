@@ -8,10 +8,13 @@ app.config["SECRET_KEY"] = "secret_key" # потом сделаю норм кл�
 csrf = CSRFProtect(app) #защита от csrf атак
  
  
+#from .database import migrate
 
 #импорт всех модулей апп
 from .route import (
-    auth
+    auth,
+    profile,
+    add_product
 )
     
  

@@ -6,7 +6,12 @@ from .models import (
     Purchase_history,
     Product,
     Session,
-    select
+    select,
+    selectinload,
+    func,
+    joinedload
      
-     
+    
+    
+ 
 )
