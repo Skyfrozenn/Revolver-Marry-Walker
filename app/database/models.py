@@ -100,8 +100,8 @@ class Product(Base):
 
     id : Mapped[int] = mapped_column(primary_key = True)
     title : Mapped[str]
-    descriprion : Mapped[str]
-    avatar : Mapped[str] = mapped_column( nullable = True)
+    description : Mapped[str]
+    avatar : Mapped[str] 
     date_add : Mapped[datetime] = mapped_column(server_default = func.now())
     price : Mapped[int]
     count : Mapped[int] 

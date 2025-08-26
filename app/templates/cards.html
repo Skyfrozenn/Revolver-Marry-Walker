@@ -15,33 +15,39 @@
 
 <body>
 
-    {% for tovars in all_products  | sort(attribute='date_add', reverse=True)  %}
-        <img class="photo" src="data:image/*;base64,{{ tovars.avatar }}" alt="Profile Picture" style="max-width: 300px; height: auto; display: block; margin-bottom: 20px;">
-        <b>Название - {{tovars.title}}</b> <br><br>
-        <b>Описание - {{tovars.descriprion}}</b> <br><br>
-        <b>Дата добавления - {{tovars.date_add}}</b> <br><br>
-        <b>Цена - {{tovars.price}}р</b> <br><br>
-        <b>Количество на складе - {{tovars.count}}</b> <br><br>
+    {% if all_products %}
+
+        {% for tovars in all_products  | sort(attribute='date_add', reverse=True)  %}
+            <img class="photo" src="data:image/*;base64,{{ tovars.avatar }}" alt="Profile Picture" style="max-width: 300px; height: auto; display: block; margin-bottom: 20px;">
+            <b>Название - {{tovars.title}}</b> <br><br>
+            <b>Описание - {{tovars.description}}</b> <br><br>
+            <b>Дата добавления - {{tovars.date_add}}</b> <br><br>
+            <b>Цена - {{tovars.price}}р</b> <br><br>
+            <b>Количество на складе - {{tovars.count}}</b> <br><br>
         
 
-        {% set ns = namespace(count_cart = 0)  %}
-        {%for cart_tovar in cart %}
-            {% if cart_tovar.product_id == tovars.id %}
-                {% set ns.count_cart = cart_tovar.count %}
-            {% endif %}
-        {% endfor %}
+            {% set ns = namespace(count_cart = 0)  %}
+            {%for cart_tovar in cart %}
+                {% if cart_tovar.product_id == tovars.id %}
+                    {% set ns.count_cart = cart_tovar.count %}
+                {% endif %}
+            {% endfor %}
         
-        {% if ns.count_cart > 0 %} <!--Тут будет просто форма изменения количества товара на плюс или минус-->
-            <button type="submit">-</button> Количество в корзине = {{ns.count_cart}} <button type="submit">+</button>
-        {% else %}
-            <button type="submit">Добавить в корзину</button>
-        {% endif %}
-        <hr>
+            {% if ns.count_cart > 0 %} <!--Тут будет просто форма изменения количества товара на плюс или минус-->
+                <button type="submit">-</button> Количество в корзине = {{ns.count_cart}} <button type="submit">+</button>
+            {% else %}
+                <button type="submit">Добавить в корзину</button>
+            {% endif %}
+            <hr>
             
 
 
  
-    {% endfor %}
+        {% endfor %}
+    {% else %}
+        <b>Постеров пока нет!</b>
+    {% endif %}
+    
 
     
 </body>
