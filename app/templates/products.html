@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Товары</title>
+</head>
+
+ 
+    <h1>Revolver Marry Walker</h1><br>
+    <a href="{{url_for('profile')}}">Вернуться в профиль</a><br><br>
+    <button onclick="window.history.back()">Назад</button><br><br>
+    <b>Категория - {{sub_category_obj.parent_categories.title}}</b><br><br>
+    <b>Подкатегория - {{sub_category_obj.title}}</b><br>
+
+
+    <hr>
+    <br>
+
+<body>
+
+
+    {% for product in products %}
+        <img class="photo" src="data:image/*;base64,{{ product.avatar }}" alt="Profile Picture" style="max-width: 300px; height: auto; display: block; margin-bottom: 20px;">
+            <b>Название - {{product.title}}</b> <br><br>
+            <b>Описание - {{product.description}}</b> <br><br>
+            <b>Дата добавления - {{product.date_add}}</b> <br><br>
+            <b>Цена - {{product.price}}р</b> <br><br>
+            <b>Количество на складе - {{product.count}}</b> <br><br>
+
+        {% set ns = namespace(count_cart = 0) %}
+        {% for cart in user_cart %}
+            {% if cart.product_id == product.id %}
+                {% set ns.count_cart = cart.count %}
+            {% endif %}
+        {% endfor %}
+
+        {% if ns.count_cart > 0 %}
+             <button type="submit">-</button> Количество в корзине = {{ns.count_cart}} <button type="submit">+</button>
+        {% else %}
+            <button type="submit">Добавить в корзину</button>
+        {% endif %}
+    
+    {% endfor %}
+            <hr>
+
+    {% if page > 1 %}
+        <a href="{{url_for('wath_all_products', page = page - 1 , sub_category_id = sub_category_id)}}">Назад</a>
+    {% endif %}
+
+    {% if page < count_page %}
+        <a href="{{url_for('wath_all_products', page = page + 1 , sub_category_id = sub_category_id)}}">Вперед</a>
+    {% endif %}
+
+    <b>Страница {{page}} из {{count_page}}</b>
+
+            
+
+        
+
+
+
+    
+</body>
+
+
+
+
+</html>

@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Подкатегории</title>
+</head>
+
+ 
+    <h1>Revolver Marry Walker</h1><br>
+    
+    <button onclick="window.history.back()">Назад</button><br><br>
+    <b>Категория - {{sub_category[0].parent_categories.title}}</b><br>
+    <hr>
+
+    <body>
+        {% if sub_category %}
+         
+
+            {% for sub_cat in sub_category  %}
+                <a href="{{ url_for('wath_all_products', page=1, sub_category_id=sub_cat.id) }}">{{sub_cat.title}}</a>
+            {% endfor %}
+        {% endif %}
+        
+    </body>
+
+
+
+
+
+
+</html>

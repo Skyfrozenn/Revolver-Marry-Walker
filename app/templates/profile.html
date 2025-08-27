@@ -26,7 +26,8 @@
     <h1>Revolver Marry Walker</h1><br>
     <a href="{{url_for('home_page')}}">Выйти</a><br><br>
     <a href="{{url_for('watch_cards')}}">Постеры</a><br><br>
-    Другие товары <br><br>
+    <a href="{{url_for('all_category')}}">Другие товары</a> <br><br>
+    
     {% if current_user.role == "Creator" or current_user.role == "Admin"  %}
         <a href="{{url_for('watch_cards_page')}}">Добавить товар</a>
     {% endif %}

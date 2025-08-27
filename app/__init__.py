@@ -14,7 +14,8 @@ csrf = CSRFProtect(app) #защита от csrf атак
 from .route import (
     auth,
     profile,
-    add_products
+    add_products,
+    view_products
 )
     
  
