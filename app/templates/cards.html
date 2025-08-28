@@ -3,6 +3,35 @@
 <head>
     <meta charset="UTF-8">
     <title>Постеры</title>
+    <style>
+        .cart-controls {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin: 10px 0;
+        }
+        
+        .cart-controls form {
+            margin: 0;
+        }
+        
+        .cart-controls button {
+            padding: 5px 15px;
+            border: 1px solid #ccc;
+            background: #f0f0f0;
+            cursor: pointer;
+            border-radius: 3px;
+        }
+        
+        .cart-controls button:hover {
+            background: #e0e0e0;
+        }
+        
+        .cart-count {
+            font-weight: bold;
+            margin: 0 10px;
+        }
+    </style>
 </head>
 <h1>Revolver Marry Walker </h1>
  
@@ -26,33 +55,55 @@
             <b>Количество на складе - {{tovars.count}}</b> <br><br>
         
 
-            {% set ns = namespace(count_cart = 0)  %}
-            {%for cart_tovar in cart %}
-                {% if cart_tovar.product_id == tovars.id %}
+          
+            {% set ns = namespace(count_cart = 0) %}
+            {% for cart_tovar in cart %}
+               {% if cart_tovar.product_id == tovars.id %}
                     {% set ns.count_cart = cart_tovar.count %}
                 {% endif %}
             {% endfor %}
-        
-            {% if ns.count_cart > 0 %} <!--Тут будет просто форма изменения количества товара на плюс или минус-->
-                <button type="submit">-</button> Количество в корзине = {{ns.count_cart}} <button type="submit">+</button>
+
+            {% if ns.count_cart > 0 %}
+            <div class="cart-controls">
+                <form action="/add_product_cart" method="post">
+                    <input type="hidden" name="csrf_token" value="{{csrf_token()}}">
+                    <input type="hidden" name="product_id" value="{{tovars.id}}">
+                    <input type="hidden" name="_method" value="cards">
+                    <input type="hidden" name="action" value="decrease">
+                    <button type="submit">-</button>
+                    </form>
+
+                <span class="cart-count">Количество в корзине - {{ns.count_cart}}</span>
+
+                {% if ns.count_cart < tovars.count %}
+                <!-- Показываем + только если можно добавить -->
+                    <form action="/add_product_cart" method="post">
+                        <input type="hidden" name="csrf_token" value="{{csrf_token()}}">
+                        <input type="hidden" name="product_id" value="{{tovars.id}}">
+                        <input type="hidden" name="_method" value="cards">
+                        <input type="hidden" name="action" value="increase">
+                        <button type="submit">+</button>
+                    </form>
+                {% endif %}
+            </div>
+
             {% else %}
-                <button type="submit">Добавить в корзину</button>
+            <!-- Товара нет в корзине -->
+                <form action="/add_product_cart" method="post">
+                    <input type="hidden" name="csrf_token" value="{{csrf_token()}}">
+                    <input type="hidden" name="product_id" value="{{tovars.id}}">
+                    <input type="hidden" name="_method" value="cards">
+                    <input type="hidden" name="action" value="add">
+                    <button type="submit">Добавить в корзину</button>
+                </form>
             {% endif %}
             <hr>
-            
-
-
- 
         {% endfor %}
     {% else %}
         <b>Постеров пока нет!</b>
     {% endif %}
-    
-
-    
 </body>
 </html>
-
 <!--title : Mapped[str]
     descriprion : Mapped[str]
     avatar : Mapped[str] = mapped_column( nullable = True)
