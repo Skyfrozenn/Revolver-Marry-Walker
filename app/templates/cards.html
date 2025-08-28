@@ -67,8 +67,8 @@
             <div class="cart-controls">
                 <form action="/add_product_cart" method="post">
                     <input type="hidden" name="csrf_token" value="{{csrf_token()}}">
-                    <input type="hidden" name="product_id" value="{{tovars.id}}">
                     <input type="hidden" name="_method" value="cards">
+                    <input type="hidden" name="product_id" value="{{tovars.id}}">
                     <input type="hidden" name="action" value="decrease">
                     <button type="submit">-</button>
                     </form>
@@ -91,8 +91,8 @@
             <!-- Товара нет в корзине -->
                 <form action="/add_product_cart" method="post">
                     <input type="hidden" name="csrf_token" value="{{csrf_token()}}">
-                    <input type="hidden" name="product_id" value="{{tovars.id}}">
                     <input type="hidden" name="_method" value="cards">
+                    <input type="hidden" name="product_id" value="{{tovars.id}}">
                     <input type="hidden" name="action" value="add">
                     <button type="submit">Добавить в корзину</button>
                 </form>

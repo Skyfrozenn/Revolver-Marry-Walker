@@ -34,11 +34,47 @@
             {% endif %}
         {% endfor %}
 
-        {% if ns.count_cart > 0 %}
-            Количество в корзине = {{ns.count_cart}} <button type="submit">+</button>
-        {% else %}
-            <button type="submit">Добавить в корзину</button>
-        {% endif %}
+         {% if ns.count_cart > 0 %}
+            <div class="cart-controls">
+                <form action="/add_product_cart" method="post">
+                    <input type="hidden" name="csrf_token" value="{{csrf_token()}}">
+                    <input type="hidden" name="page" value="{{page}}">
+                    <input type="hidden" name="sub_category_id" value="{{sub_category_id}}">
+                    <input type="hidden" name="_method" value="products">
+                    <input type="hidden" name="product_id" value="{{product.id}}">
+                    <input type="hidden" name="action" value="decrease">
+                    <button type="submit">-</button>
+                    </form>
+
+                <span class="cart-count">Количество в корзине - {{ns.count_cart}}</span>
+
+                {% if ns.count_cart < product.count %}
+                <!-- Показываем + только если можно добавить -->
+                    <form action="/add_product_cart" method="post">
+                        <input type="hidden" name="csrf_token" value="{{csrf_token()}}">
+                        <input type="hidden" name="sub_category_id" value="{{sub_category_id}}">
+                        <input type="hidden" name="page" value="{{page}}">
+                        <input type="hidden" name="_method" value="products">
+                        <input type="hidden" name="product_id" value="{{product.id}}">
+                        <input type="hidden" name="action" value="increase">
+                        <button type="submit">+</button>
+                    </form>
+                {% endif %}
+            </div>
+
+            {% else %}
+            <!-- Товара нет в корзине -->
+                <form action="/add_product_cart" method="post">
+                    <input type="hidden" name="csrf_token" value="{{csrf_token()}}">
+                    <input type="hidden" name="page" value="{{page}}">
+                    <input type="hidden" name="sub_category_id" value="{{sub_category_id}}">
+                    <input type="hidden" name="_method" value="products">
+                    <input type="hidden" name="product_id" value="{{product.id}}">
+                    <input type="hidden" name="action" value="add">
+                    <button type="submit">Добавить в корзину</button>
+                </form>
+            {% endif %}
+            <hr>
     
     {% endfor %}
             <hr>
