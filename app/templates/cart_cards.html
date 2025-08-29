@@ -2,7 +2,7 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <title>Добавить товар</title>
+    <title>Добавление постеров</title>
     <style>
         .flash-messages {
             position: fixed;
@@ -36,13 +36,11 @@
 </head>
 
 <body>
-    <h1>Revolver Marry Walker</h1><br>
+    <h1>Revolver Marry Walker</h1>
     <a href="{{url_for('profile')}}">Вернуться в профиль</a><br><br>
-    <button onclick="window.history.back()">Назад</button>
-
+    <a href="{{url_for('add_page_products')}}">Добавить другие товары</a>
     <hr>
-    <br>
-    
+
     <!-- Flash сообщения -->
     <div class="flash-messages">
         {% with messages = get_flashed_messages(with_categories=true) %}
@@ -54,17 +52,14 @@
         {% endwith %}
     </div>
 
-    <form action="/add_new_product" method="post" enctype="multipart/form-data">
-        <input type="hidden" name="csrf_token" value="{{csrf_token()}}">
-        <input type="file" name="photo" accept="image/*" required><br><br>
-        <input type="text" name="category" placeholder="Введите имя категории товара" required><br><br>
-        <input type="text" name="sub_category" placeholder="Введите подкатегорию товара" required><br><br>
-        <input type="text" name="title" placeholder="Введите название товара" required><br><br>
-        <input type="text" name="description" placeholder="Введите описание товара" required><br><br>
-        <input type="text" name="price" placeholder="Укаите цену товара" required><br><br>
-        <input type="text" name="count" placeholder="Укажите кол-во товара" required><br><br>
+    <form action="/add_cards" method="post" enctype="multipart/form-data">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        <input type="file" name="photo" accept="image/*" required><br>
+        <input type="text" name="title" placeholder="Введите название постера" required><br>
+        <input type="text" name="description" placeholder="Введите описание товара" required><br>
+        <input type="text" name="price" placeholder="Укаите цену товара" required><br>
+        <input type="text" name="count" placeholder="Укажите кол-во товара" required><br>
         <button type="submit">Добавить</button>
-        <hr>
     </form>
 
     <script>

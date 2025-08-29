@@ -85,6 +85,7 @@ def adding_card():
 
 
 @app.get("/cards")
+@login_required
 def watch_cards():
 
     with Session() as session:
@@ -120,6 +121,10 @@ def add_product():
     price = request.form.get("price")
     count = request.form.get("count")
 
+    #в капиталайз
+    sub_category_name = sub_category_name.capitalize().strip()
+    category_name = category_name.capitalize().strip()
+
     #конвертируем в интеджер
     price = int(price)
     count = int(count)
@@ -133,7 +138,7 @@ def add_product():
         file.stream.seek(0) #вернули данные обратно
 
         if kind is None or kind.mime not in ALLOWED_MIME_TYPES:
-             return "гавно"
+             flash("Загрузите только фото!")
 
         #2 убираем опасные символы на всякий случай 
         secure_filename(file.filename)
@@ -180,10 +185,13 @@ def add_product():
             #4 cохраняем в память
             session.add(product)
 
-        return "Товар создан!", 201
+            #5 получаем айди до закрытия сессии
+            sub_category_id = sub_category.id
+
+        return redirect(url_for("wath_all_products", page = 1, sub_category_id = sub_category_id))
 
     else:
-         return "ХУЙ"
+        flash("Фото обязательно!")
 
 
 

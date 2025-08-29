@@ -37,7 +37,7 @@ def view_sub_category(category_id):
 @login_required
 def wath_all_products(page , sub_category_id):
     #количество товаров на странице
-    PER_PAGE = 10
+    PER_PAGE = 1
 
     with Session() as session:
 

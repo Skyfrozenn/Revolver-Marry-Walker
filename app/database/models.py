@@ -55,7 +55,7 @@ class Subcategory(Base):
 
     #связь
     parent_categories : Mapped["Category"] = relationship(back_populates = "sub_category")
-    sub_category_products : Mapped["Product"] = relationship(back_populates = "sub_category")
+    sub_category_products : Mapped[list["Product"]] = relationship(back_populates = "sub_category")
 
 
 
@@ -112,7 +112,7 @@ class Product(Base):
     #связи корзина, история покупок, подкатегория
     cart : Mapped[list["Cart"]] = relationship(back_populates = "product_cart")
     order_item : Mapped[list["Purchase_history"]] = relationship(back_populates = "purchased_products")
-    sub_category : Mapped[list["Subcategory"]] = relationship(back_populates = "sub_category_products")
+    sub_category : Mapped["Subcategory"] = relationship(back_populates = "sub_category_products")
 
 
 

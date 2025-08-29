@@ -1,7 +1,7 @@
 from .. import app
 from .view_products import render_template, redirect, request, login_required, current_user, flash, url_for
 
-from ..database import Cart, User,Subcategory,Category, Session, select
+from ..database import Cart, User,Subcategory,Category, Session, select, Product, func, joinedload, desc
 
 
 @app.post("/add_product_cart")
@@ -107,8 +107,26 @@ def add_product_cart():
 
 
              
+@app.get("/cart_user_card")
+@login_required
+def cart_user_card():
+    with Session() as session:
+
+        user_products = session.execute(
+            select(Product, Cart.count )
+            .where(Product.sub_category_id == None)
+            .join(Product.cart)
+            .where(Cart.user_id == current_user.id)
+            .options(
+                joinedload(Product.sub_category)
+                .joinedload(Subcategory.parent_categories)
+            )
+            
+            
+        ).all()
+    return render_template("cart_cards.html", user_products = user_products)
         
-             
+              
             
 
 

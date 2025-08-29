@@ -7,8 +7,10 @@
 
  
     <h1>Revolver Marry Walker</h1><br>
-    <a href="{{url_for('profile')}}">Вернуться в профиль</a><br><br>
     <button onclick="window.history.back()">Назад</button><br><br>
+    <a href="{{url_for('profile')}}">Вернуться в профиль</a><br><br>
+     
+    <a href="{{url_for('cart_user_card')}}">Корзина</a><br><br><br><br>
     <b>Категория - {{sub_category_obj.parent_categories.title}}</b><br><br>
     <b>Подкатегория - {{sub_category_obj.title}}</b><br>
 
@@ -82,12 +84,14 @@
     {% if page > 1 %}
         <a href="{{url_for('wath_all_products', page = page - 1 , sub_category_id = sub_category_id)}}">Назад</a>
     {% endif %}
+     
+    <b>(Страница {{page}} из {{count_page}})</b>
 
     {% if page < count_page %}
         <a href="{{url_for('wath_all_products', page = page + 1 , sub_category_id = sub_category_id)}}">Вперед</a>
     {% endif %}
 
-    <b>Страница {{page}} из {{count_page}}</b>
+     
 
             
 
