@@ -13,39 +13,29 @@ def add_product_cart():
     product_id = int(product_id)
 
     with Session.begin() as session:
+        #находим товар
+        product = session.scalar(
+                    select(Cart)
+                    .where(Cart.product_id == product_id)
+                    .where(Cart.user_id == current_user.id)
+
+                )
         
         #если это карточка
         if request.form.get("_method") == "cards":
 
             #если товар уже есть просто + 1
             if action == "increase":
-
-                product = session.scalar(
-                    select(Cart)
-                    .where(Cart.product_id == product_id)
-                    .where(Cart.user_id == current_user.id)
-
-                )
                 product.count +=1
                 return redirect(url_for('watch_cards'))
 
 
             elif action == "decrease":
-
-                product = session.scalar(
-                    select(Cart)
-                    .where(Cart.product_id == product_id)
-                    .where(Cart.user_id == current_user.id)
-
-                )
                 product.count -=1
-                
-                 
 
                 if product.count == 0:
                     session.delete(product)
                      
-
                 return redirect(url_for('watch_cards'))
 
             
@@ -58,46 +48,24 @@ def add_product_cart():
         #ТОВАРЫ 
         elif request.form.get("_method") == "products":
 
-            sub_category_id = request.form.get("sub_category_id")
-            page = request.form.get("page")
+            sub_category_id = request.form.get("sub_category_id", type = int)
+            page = request.form.get("page", type = int)
 
-            # в итнеджер для передачи на юрл функцию
-            sub_category_id = int(sub_category_id)
-            page = int(page)
-
-            
             #если товар уже есть просто + 1
             if action == "increase":
 
-                product = session.scalar(
-                    select(Cart)
-                    .where(Cart.product_id == product_id)
-                    .where(Cart.user_id == current_user.id)
-
-                )
                 product.count +=1
                 return redirect(url_for("wath_all_products", page = page, sub_category_id = sub_category_id))
 
-
             elif action == "decrease":
 
-                product = session.scalar(
-                    select(Cart)
-                    .where(Cart.product_id == product_id)
-                    .where(Cart.user_id == current_user.id)
-
-                )
                 product.count -=1
-                
-                 
-
+      
                 if product.count == 0:
                     session.delete(product)
                      
-
                 return redirect(url_for("wath_all_products", page = page, sub_category_id = sub_category_id))
 
-            
             elif action == "add":
 
                 product = Cart(user_id = current_user.id, product_id = product_id)
@@ -110,8 +78,9 @@ def add_product_cart():
 @app.get("/cart_user_card")
 @login_required
 def cart_user_card():
-    with Session() as session:
 
+    with Session() as session:
+   
         user_products = session.execute(
             select(Product, Cart.count )
             .where(Product.sub_category_id == None)
@@ -126,7 +95,38 @@ def cart_user_card():
         ).all()
     return render_template("cart_cards.html", user_products = user_products)
         
-              
+
+@app.post("/decrease_products_cart")
+def delete_products_cart():
+    product_id = request.form.get("product_id", type=int)
+    method = request.form.get("method")
+
+    with Session.begin() as session:
+
+        product_cart = session.scalar(
+                    select(Cart)
+                    .where(Cart.product_id == product_id)
+                )
+        
+        if method == "decrease":
+            product_cart.count -=1
+            if product_cart.count == 0:
+                session.delete(product_cart)
+
+        elif method == "all_del":
+            session.delete(product_cart)
+
+    return redirect(url_for("cart_user_card"))
+
+
+         
+            
+
+
+
+        
+        
+
             
 
 

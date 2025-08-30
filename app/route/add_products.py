@@ -118,17 +118,14 @@ def add_product():
     sub_category_name = request.form.get("sub_category")
     title = request.form.get("title")
     description = request.form.get("description")
-    price = request.form.get("price")
-    count = request.form.get("count")
+    price = request.form.get("price", type=int)
+    count = request.form.get("count", type=int)
 
     #в капиталайз
     sub_category_name = sub_category_name.capitalize().strip()
     category_name = category_name.capitalize().strip()
 
-    #конвертируем в интеджер
-    price = int(price)
-    count = int(count)
-
+ 
     
 
     if file and file.filename:

@@ -3,21 +3,6 @@
 <head>
     <meta charset="UTF-8">
     <title>Корзина</title>
-    
-</head>
-<h1>Revolver Marry Walker</h1>
-    <a href="{{url_for('profile')}}">Вернуться в профиль</a><br><br>
-    <button onclick="window.history.back()">Назад</button><br><br>
-    КОРЗИНА ПОСТЕРЫ <br><br>
-    <hr>
-
-
-<body>
-    <!DOCTYPE html>
-<html lang="ru">
-<head>
-    <meta charset="UTF-8">
-    <title>Корзина</title>
     <style>
         .card img {
             max-width: 300px;
@@ -31,28 +16,62 @@
             margin: 10px 0;
             border-radius: 5px;
         }
+        .cart-controls {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .cart-controls form {
+            margin: 0;
+        }
     </style>
 </head>
 <body>
-  
+    <h1>Revolver Marry Walker</h1>
+    <b>КОРЗИНА ПОСТЕРЫ</b>  <br><br><br>
+    <button onclick="window.history.back()">Назад</button><br><br> 
+    <a href="{{url_for('profile')}}">Вернуться в профиль</a><br><br>
+     
+    Корзина товаров
+     
+    <hr>
 
     {% if user_products %}
         {% for product, cart_count in user_products %}
             <div class="card">
                 <img src="data:image/*;base64,{{ product.avatar }}" alt="{{ product.title }}">
-                <h3>{{ product.title }}</h3>
-                <p>{{ product.description }}</p>
+                <h3>Название - {{ product.title }}</h3>
+                <p>Описание -  {{ product.description }}</p>
                 <p>Цена: {{ product.price }}р</p>
-                <p>В корзине: {{ cart_count }} шт.</p>
+                
+                <div class="cart-controls">
+                    <form action="/decrease_products_cart" method="post">
+                        <input type="hidden" name="csrf_token" value="{{csrf_token()}}">
+                        <input type="hidden" name="product_id" value="{{product.id}}">
+                        <input type="hidden" name="method" value="decrease">
+                        <button type="submit">-</button>
+                    </form>
+                    
+                     
+                    
+                    <p>В корзине: {{ cart_count }} шт.</p>
+                    <br>
+                    {% if cart_count > 1 %}
+                        
+                        <form action="/decrease_products_cart" method="post">
+                            <input type="hidden" name="csrf_token" value="{{csrf_token()}}">
+                            <input type="hidden" name="product_id" value="{{product.id}}">
+                            <input type="hidden" name="method" value="all_del">
+                            <button type="submit">Удалить все</button>
+                        </form>
+                        <br>
+                        
+                    {% endif %}
+                </div>
             </div>
         {% endfor %}
     {% else %}
         <p>😔 В корзине нет товаров</p>
     {% endif %}
-
-</body>
-</html>
-
-   
 </body>
 </html>
