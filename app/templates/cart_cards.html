@@ -2,72 +2,57 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <title>Добавление постеров</title>
+    <title>Корзина</title>
+    
+</head>
+<h1>Revolver Marry Walker</h1>
+    <a href="{{url_for('profile')}}">Вернуться в профиль</a><br><br>
+    <button onclick="window.history.back()">Назад</button><br><br>
+    КОРЗИНА ПОСТЕРЫ <br><br>
+    <hr>
+
+
+<body>
+    <!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Корзина</title>
     <style>
-        .flash-messages {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            z-index: 1000;
+        .card img {
+            max-width: 300px;
+            height: auto;
+            display: block;
+            margin-bottom: 20px;
         }
-        
-        .flash-message {
-            padding: 15px;
+        .card {
+            border: 1px solid #ccc;
+            padding: 20px;
             margin: 10px 0;
             border-radius: 5px;
-            color: white;
-            animation: fadeOut 5s forwards;
-        }
-        
-        .flash-error {
-            background-color: #ff4757;
-        }
-        
-        .flash-success {
-            background-color: #2ed573;
-        }
-        
-        @keyframes fadeOut {
-            0% { opacity: 1; }
-            90% { opacity: 1; }
-            100% { opacity: 0; display: none; }
         }
     </style>
 </head>
-
 <body>
-    <h1>Revolver Marry Walker</h1>
-    <a href="{{url_for('profile')}}">Вернуться в профиль</a><br><br>
-    <a href="{{url_for('add_page_products')}}">Добавить другие товары</a>
-    <hr>
+  
 
-    <!-- Flash сообщения -->
-    <div class="flash-messages">
-        {% with messages = get_flashed_messages(with_categories=true) %}
-            {% if messages %}
-                {% for category, message in messages %}
-                    <div class="flash-message flash-{{ category }}">{{ message }}</div>
-                {% endfor %}
-            {% endif %}
-        {% endwith %}
-    </div>
+    {% if user_products %}
+        {% for product, cart_count in user_products %}
+            <div class="card">
+                <img src="data:image/*;base64,{{ product.avatar }}" alt="{{ product.title }}">
+                <h3>{{ product.title }}</h3>
+                <p>{{ product.description }}</p>
+                <p>Цена: {{ product.price }}р</p>
+                <p>В корзине: {{ cart_count }} шт.</p>
+            </div>
+        {% endfor %}
+    {% else %}
+        <p>😔 В корзине нет товаров</p>
+    {% endif %}
 
-    <form action="/add_cards" method="post" enctype="multipart/form-data">
-        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-        <input type="file" name="photo" accept="image/*" required><br>
-        <input type="text" name="title" placeholder="Введите название постера" required><br>
-        <input type="text" name="description" placeholder="Введите описание товара" required><br>
-        <input type="text" name="price" placeholder="Укаите цену товара" required><br>
-        <input type="text" name="count" placeholder="Укажите кол-во товара" required><br>
-        <button type="submit">Добавить</button>
-    </form>
+</body>
+</html>
 
-    <script>
-        // Автоудаление flash сообщений через 5 секунд
-        setTimeout(() => {
-            const flashMessages = document.querySelectorAll('.flash-message');
-            flashMessages.forEach(msg => msg.remove());
-        }, 5000);
-    </script>
+   
 </body>
 </html>
