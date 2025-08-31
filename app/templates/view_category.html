@@ -3,26 +3,69 @@
 <head>
     <meta charset="UTF-8">
     <title>категории</title>
+    <style>
+        /* Стиль для флеш сообщения - белый текст в черной рамке */
+        .flash-message {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: white; /* Белый текст */
+            background-color: black; /* Черный фон */
+            padding: 20px 40px;
+            border: 2px solid black; /* Черная рамка */
+            border-radius: 10px;
+            font-size: 18px;
+            text-align: center;
+            z-index: 1000;
+            animation: fadeInOut 5s ease-in-out;
+        }
+        
+        @keyframes fadeInOut {
+            0% { opacity: 0; }
+            10% { opacity: 1; }
+            90% { opacity: 1; }
+            100% { opacity: 0; }
+        }
+    </style>
 </head>
 
- 
-    <h1>Revolver Marry Walker</h1><br>
-    
-    <button onclick="window.history.back()">Назад</button>
-    <hr>
-
-    <body>
-        {% if category %}
-            {% for item_cat in category  %}
-                <a href="{{url_for('view_sub_category', category_id = item_cat.id)}}">{{item_cat.title}}</a><br>
+<body>
+    <!-- Вывод флеш сообщений -->
+    {% with messages = get_flashed_messages() %}
+        {% if messages %}
+            {% for message in messages %}
+                <div class="flash-message">{{ message }}</div>
             {% endfor %}
         {% endif %}
-        
-    </body>
+    {% endwith %}
 
+    <h1>Revolver Marry Walker</h1><br>
+    <h2>категории</h2><br>
+    <a href="{{url_for('profile')}}">Вернуться в профиль</a><br>
+    
+     
+    <hr>
 
+    {% if category %}
+        {% for item_cat in category  %}
+            <a href="{{url_for('view_sub_category', category_id = item_cat.id)}}">{{item_cat.title}}</a><br>
+        {% endfor %}
+    
+    {% else %}
+        <b>Товаров еще нет 😔 </b>
+    {% endif %}
 
-
-
-
+    <!-- Скрипт для автоматического скрытия флеш сообщения -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const flashMessage = document.querySelector('.flash-message');
+            if (flashMessage) {
+                setTimeout(() => {
+                    flashMessage.style.display = 'none';
+                }, 5000); // 5 секунд
+            }
+        });
+    </script>
+</body>
 </html>

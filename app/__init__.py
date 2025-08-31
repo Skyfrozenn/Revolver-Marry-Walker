@@ -6,7 +6,8 @@ app = Flask(__name__)
 app.config["SECRET_KEY"] = "secret_key" # потом сделаю норм ключ
 
 csrf = CSRFProtect(app) #защита от csrf атак
- 
+
+
  
 
 #импорт всех модулей апп

@@ -3,11 +3,47 @@
 <head>
     <meta charset="UTF-8">
     <title>Товары</title>
+    <style>
+        .cart-controls {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin: 10px 0;
+        }
+        
+        .cart-controls form {
+            margin: 0;
+        }
+        
+        .cart-controls button {
+            padding: 5px 15px;
+            border: 1px solid #ccc;
+            background: #f0f0f0;
+            cursor: pointer;
+            border-radius: 3px;
+        }
+        
+        .cart-controls button:hover {
+            background: #e0e0e0;
+        }
+        
+        .cart-count {
+            font-weight: bold;
+            margin: 0 10px;
+        }
+        
+        .out-of-stock {
+            color: red;
+            font-weight: bold;
+            font-size: 18px;
+            margin: 10px 0;
+        }
+    </style>
 </head>
 
  
     <h1>Revolver Marry Walker</h1><br>
-    <button onclick="window.history.back()">Назад</button><br><br>
+     
     <a href="{{url_for('profile')}}">Вернуться в профиль</a><br><br>
      
     <a href="{{url_for('cart_user_card')}}">Корзина</a><br><br><br><br>
@@ -29,40 +65,42 @@
             <b>Цена - {{product.price}}р</b> <br><br>
             <b>Количество на складе - {{product.count}}</b> <br><br>
 
-        {% set ns = namespace(count_cart = 0) %}
-        {% for cart in user_cart %}
-            {% if cart.product_id == product.id %}
-                {% set ns.count_cart = cart.count %}
-            {% endif %}
-        {% endfor %}
+        <!-- Проверка статуса товара -->
+        {% if product.status == "В наличии" %}
+            {% set ns = namespace(count_cart = 0) %}
+            {% for cart in user_cart %}
+                {% if cart.product_id == product.id %}
+                    {% set ns.count_cart = cart.count %}
+                {% endif %}
+            {% endfor %}
 
-         {% if ns.count_cart > 0 %}
-            <div class="cart-controls">
-                <form action="/add_product_cart" method="post">
-                    <input type="hidden" name="csrf_token" value="{{csrf_token()}}">
-                    <input type="hidden" name="page" value="{{page}}">
-                    <input type="hidden" name="sub_category_id" value="{{sub_category_id}}">
-                    <input type="hidden" name="_method" value="products">
-                    <input type="hidden" name="product_id" value="{{product.id}}">
-                    <input type="hidden" name="action" value="decrease">
-                    <button type="submit">-</button>
-                    </form>
-
-                <span class="cart-count">Количество в корзине - {{ns.count_cart}}</span>
-
-                {% if ns.count_cart < product.count %}
-                <!-- Показываем + только если можно добавить -->
+            {% if ns.count_cart > 0 %}
+                <div class="cart-controls">
                     <form action="/add_product_cart" method="post">
                         <input type="hidden" name="csrf_token" value="{{csrf_token()}}">
-                        <input type="hidden" name="sub_category_id" value="{{sub_category_id}}">
                         <input type="hidden" name="page" value="{{page}}">
+                        <input type="hidden" name="sub_category_id" value="{{sub_category_id}}">
                         <input type="hidden" name="_method" value="products">
                         <input type="hidden" name="product_id" value="{{product.id}}">
-                        <input type="hidden" name="action" value="increase">
-                        <button type="submit">+</button>
-                    </form>
-                {% endif %}
-            </div>
+                        <input type="hidden" name="action" value="decrease">
+                        <button type="submit">-</button>
+                        </form>
+
+                    <span class="cart-count">Количество в корзине - {{ns.count_cart}}</span>
+
+                    {% if ns.count_cart < product.count %}
+                    <!-- Показываем + только если можно добавить -->
+                        <form action="/add_product_cart" method="post">
+                            <input type="hidden" name="csrf_token" value="{{csrf_token()}}">
+                            <input type="hidden" name="sub_category_id" value="{{sub_category_id}}">
+                            <input type="hidden" name="page" value="{{page}}">
+                            <input type="hidden" name="_method" value="products">
+                            <input type="hidden" name="product_id" value="{{product.id}}">
+                            <input type="hidden" name="action" value="increase">
+                            <button type="submit">+</button>
+                        </form>
+                    {% endif %}
+                </div>
 
             {% else %}
             <!-- Товара нет в корзине -->
@@ -76,10 +114,29 @@
                     <button type="submit">Добавить в корзину</button>
                 </form>
             {% endif %}
-            <hr>
+        
+        {% else %}
+            <!-- Товар не в наличии -->
+            <div class="out-of-stock">Товар закончился на складе</div>
+            <a href="{{url_for('add_page_products')}}">Востановить?</a><br><br>
+             
+        {% endif %}
+        
+        <br><br>
+        {% if current_user.role == "Creator" or current_user.role == "Admin"  %}
+            <form action="/delete_product" method="post">
+                <input type="hidden" name="csrf_token" value="{{csrf_token()}}">
+                <input type="hidden" name="product_id" value="{{product.id}}">
+                <input type="hidden" name="page" value="{{page}}">
+                <input type="hidden" name="sub_category_id" value="{{sub_category_id}}">
+                <button type="submit">Удалить товар</button>
+            </form>
+        {% endif %}
+        <hr>
     
     {% endfor %}
-            <hr>
+    
+    <hr>
 
     {% if page > 1 %}
         <a href="{{url_for('wath_all_products', page = page - 1 , sub_category_id = sub_category_id)}}">Назад</a>
@@ -91,18 +148,5 @@
         <a href="{{url_for('wath_all_products', page = page + 1 , sub_category_id = sub_category_id)}}">Вперед</a>
     {% endif %}
 
-     
-
-            
-
-        
-
-
-
-    
 </body>
-
-
-
-
 </html>

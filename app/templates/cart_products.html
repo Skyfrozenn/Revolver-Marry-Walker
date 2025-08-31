@@ -2,7 +2,7 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <title>Корзина</title>
+    <title>Корзина товаров</title>
     <style>
         .card img {
             max-width: 300px;
@@ -24,110 +24,125 @@
         .cart-controls form {
             margin: 0;
         }
-        /* Добавляю стили для флеш сообщения */
-        .flash-message {
+        .category-info {
+            background-color: #f5f5f5;
+            padding: 10px;
+            margin-bottom: 15px;
+            border-radius: 5px;
+        }
+        /* Обновляю стили для флеш сообщений */
+        .flash-messages-container {
             position: fixed;
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
+            z-index: 1000;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .flash-message {
             background-color: rgba(0, 0, 0, 0.8);
             color: white;
-            padding: 20px 40px;
+            padding: 15px 30px;
             border-radius: 10px;
-            z-index: 1000;
-            font-size: 18px;
+            font-size: 16px;
             animation: fadeInOut 3s ease-in-out;
         }
         
         @keyframes fadeInOut {
-            0% { opacity: 0; }
-            10% { opacity: 1; }
-            90% { opacity: 1; }
-            100% { opacity: 0; }
+            0% { opacity: 0; transform: translateY(-10px); }
+            10% { opacity: 1; transform: translateY(0); }
+            90% { opacity: 1; transform: translateY(0); }
+            100% { opacity: 0; transform: translateY(-10px); }
         }
     </style>
 </head>
 <body>
-    <!-- Добавляю вывод флеш сообщений -->
-    {% with messages = get_flashed_messages() %}
-        {% if messages %}
-            {% for message in messages %}
-                <div class="flash-message">{{ message }}</div>
-            {% endfor %}
-        {% endif %}
-    {% endwith %}
+    <!-- Контейнер для флеш сообщений -->
+    <div class="flash-messages-container">
+        {% with messages = get_flashed_messages() %}
+            {% if messages %}
+                {% for message in messages %}
+                    <div class="flash-message">{{ message }}</div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+    </div>
 
     <h1>Revolver Marry Walker</h1>
-    <b>КОРЗИНА ПОСТЕРЫ</b>  <br><br><br>
-     
+    <b>КОРЗИНА ТОВАРОВ</b>  <br><br><br>
+    
     <a href="{{url_for('profile')}}">Вернуться в профиль</a><br><br>
-     
-    <a href="{{url_for('cart_user_product')}}">Корзина товаров</a>
+    <a href="{{url_for('cart_user_card')}}">Корзина Постеров</a>
      
     <hr>
 
-    {% if user_products %}
-        {% for product, cart_count, date_add in user_products %}
+    {% if user_prod %}
+        {% for product, cart_count, date_add in user_prod %}
             <div class="card">
+                <!-- Информация о категории и подкатегории -->
+                <div class="category-info">
+                    <p>Категория: {{ product.sub_category.parent_categories.title }}</p>
+                    <p>Подкатегория: {{ product.sub_category.title}}</p>
+                </div>
+                
                 <img src="data:image/*;base64,{{ product.avatar }}" alt="{{ product.title }}">
                 <h3>Название - {{ product.title }}</h3>
                 <p>Описание -  {{ product.description }}</p>
-                <p>Цена: {{ product.price }}р</p><br><br>
+                <p>Цена: {{ product.price }}р</p>
                 <p>Дата добавления : {{date_add}}</p><br><br>
-
 
                 <form action="/buy_product" method="post">
                     <input type="hidden" name="csrf_token" value="{{csrf_token()}}">
                     <input type="hidden" name="product_id" value="{{product.id}}">
                     <input type="hidden" name="count_product" value="{{cart_count}}">
-                    <input type="hidden" name="place" value="cards">
+                    <input type="hidden" name="place" value="products">
                     <button type="submit">Купить товар</button>
                 </form>
 
-
-                
                 
                 <div class="cart-controls">
                     <form action="/decrease_products_cart" method="post">
                         <input type="hidden" name="csrf_token" value="{{csrf_token()}}">
-                        <input type="hidden" name="place" value="card">
+                        <input type="hidden" name="place" value="product">
                         <input type="hidden" name="product_id" value="{{product.id}}">
                         <input type="hidden" name="method" value="decrease">
                         <button type="submit">-</button>
                     </form>
                     
-                     
-                    
                     <p>В корзине: {{ cart_count }} шт.</p>
                     <br>
+                    
                     {% if cart_count > 1 %}
-                        
                         <form action="/decrease_products_cart" method="post">
                             <input type="hidden" name="csrf_token" value="{{csrf_token()}}">
-                            <input type="hidden" name="place" value="card">
+                            <input type="hidden" name="place" value="product">
                             <input type="hidden" name="product_id" value="{{product.id}}">
                             <input type="hidden" name="method" value="all_del">
                             <button type="submit">Удалить все</button>
                         </form>
                         <br>
-                        
                     {% endif %}
                 </div>
             </div>
         {% endfor %}
     {% else %}
-        <p>😔 В корзине нет постеров</p>
+        <p>😔 В корзине нет товаров</p>
     {% endif %}
 
-    <!-- Добавляю скрипт для автоматического скрытия флеш сообщения -->
+    <!-- Скрипт для автоматического скрытия флеш сообщений -->
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            const flashMessage = document.querySelector('.flash-message');
-            if (flashMessage) {
+            const flashMessages = document.querySelectorAll('.flash-message');
+            flashMessages.forEach((message, index) => {
+                // Добавляем задержку для каждого сообщения, чтобы они не накладывались
                 setTimeout(() => {
-                    flashMessage.style.display = 'none';
-                }, 1000);
-            }
+                    message.style.display = 'none';
+                }, 3000 + (index * 100)); // 3 секунды + небольшая задержка между сообщениями
+            });
         });
     </script>
 </body>

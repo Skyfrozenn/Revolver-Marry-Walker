@@ -66,7 +66,10 @@ class Cart(Base):
 
     #внешние ключи
     user_id : Mapped[int] = mapped_column(ForeignKey("users.id", ondelete = "CASCADE"))
-    product_id : Mapped[int] = mapped_column(ForeignKey("products.id"))
+    product_id : Mapped[int] = mapped_column(ForeignKey("products.id", ondelete = "CASCADE"))
+
+     #время создания колонки
+    join : Mapped[datetime] = mapped_column(server_default = func.now())
 
     
 
@@ -81,18 +84,23 @@ class Cart(Base):
 class Purchase_history(Base):
     __tablename__ = "purchases"
     id : Mapped[int] = mapped_column(primary_key = True)
-    count : Mapped[int] = mapped_column(default = 1)
+    count : Mapped[int] 
+    spent : Mapped[int]
 
     #внешние ключи
     user_id : Mapped[int] = mapped_column(ForeignKey("users.id", ondelete = "CASCADE"))
-    product_id : Mapped[int] = mapped_column(ForeignKey("products.id"))
+    product_id : Mapped[int] = mapped_column(ForeignKey("products.id", ondelete = "SET NULL"), nullable=True)
+
+    #время создания колонки
+    join : Mapped[datetime] = mapped_column(server_default = func.now())
 
     
-
     #связь с юзером и товарами
     user_purchases : Mapped[list["User"]] = relationship(back_populates = "order_item")
     purchased_products : Mapped[list["Product"]] = relationship(back_populates = "order_item")
     
+
+
 
 
 class Product(Base):
@@ -104,16 +112,16 @@ class Product(Base):
     avatar : Mapped[str] 
     date_add : Mapped[datetime] = mapped_column(server_default = func.now())
     price : Mapped[int]
-    count : Mapped[int] 
+    count : Mapped[int]
+    status : Mapped[str] = mapped_column(default = "В наличии")
 
     #внещний ключ подкатегории 
     sub_category_id : Mapped[int] = mapped_column(ForeignKey("subcategories.id"), nullable = True) #для карточек они будут без подкатегорий
 
     #связи корзина, история покупок, подкатегория
-    cart : Mapped[list["Cart"]] = relationship(back_populates = "product_cart")
-    order_item : Mapped[list["Purchase_history"]] = relationship(back_populates = "purchased_products")
-    sub_category : Mapped["Subcategory"] = relationship(back_populates = "sub_category_products")
-
+    cart : Mapped[list["Cart"]] = relationship(back_populates = "product_cart", cascade = "all, delete-orphan")  
+    order_item : Mapped[list["Purchase_history"]] = relationship(back_populates = "purchased_products")  
+    sub_category : Mapped["Subcategory"] = relationship(back_populates = "sub_category_products")  
 
 
 #def creat_table():

@@ -37,47 +37,55 @@ def adding_card():
     file = request.files.get("photo")  
     title = request.form.get("title")
     description = request.form.get("description")
-    price = request.form.get("price")
-    count = request.form.get("count")
+    price = request.form.get("price", type=int)
+    count = request.form.get("count", type=int)
 
-    # переводим в инт от сервера 
-    price = int(price)
-    count = int(count)
+    title = title.capitalize().strip()
 
-     
-
-    #1) провека майм типа
-     
     with Session.begin() as db_session:
-        
-        #1) провека майм типа
         if file and file.filename:
-            kind = filetype.guess(file.stream.read(261)) #читаем первые 261 байтов, то есть расширения фото
-            file.stream.seek(0) #возвращаем поток в начало
+            kind = filetype.guess(file.stream.read(261))
+            file.stream.seek(0)
 
-            if kind  is None or kind.mime not in ALLOWED_MIME_TYPES:
+            if kind is None or kind.mime not in ALLOWED_MIME_TYPES:
                 flash("Неверный формат файла!")
+                return redirect(url_for("watch_cards"))
 
-            #2 убираем опасные символы из содержания имени
             secure_filename(file.filename)
+            avatar = b64encode(file.read()).decode("utf-8")
 
-            #3 кодируем данные
-            avatar = b64encode(file.read()).decode("utf-8") #размешаем биты в бд в формате читаемой строки
-         
-            new_cards = Product(
-                title = title,
-                description = description,
-                avatar = avatar,
-                price = price,
-                count = count
-
+            # Проверяем есть ли товар
+            product_check = db_session.scalar(
+                select(Product)
+                .where(Product.title == title)
             )
 
+            if product_check:  # ← ТОВАР СУЩЕСТВУЕТ
+                product_check.count += count
+                product_check.price = price
+                product_check.description = description
+                product_check.avatar = avatar
+
+                if product_check.status == "Нет в наличии":
+                    product_check.status = "В наличии"
+                    flash("Товар снова в наличии!")
+                else:
+                    flash("Данные обновлены!")
+                    
+            else:  # ← ТОВАРА НЕТ
+                new_cards = Product(
+                    title=title,
+                    description=description,
+                    avatar=avatar,
+                    price=price,
+                    count=count
+                )
+                db_session.add(new_cards)
+                flash("Новая карточка добавлена!")
+                
         else:
             flash("Фото обязательно для карточек!")
-             
-        #комитим
-        db_session.add(new_cards)
+
     return redirect(url_for("watch_cards"))
 
  
@@ -121,74 +129,91 @@ def add_product():
     price = request.form.get("price", type=int)
     count = request.form.get("count", type=int)
 
-    #в капиталайз
+    # в капиталайз
     sub_category_name = sub_category_name.capitalize().strip()
     category_name = category_name.capitalize().strip()
-
- 
-    
+    title = title.capitalize().strip()
 
     if file and file.filename:
-
-        #1 прояерм майм тип
-        kind = filetype.guess(file.stream.read(261)) #читаем первые 261 байт
-        file.stream.seek(0) #вернули данные обратно
+        # 1 проверяем майм тип
+        kind = filetype.guess(file.stream.read(261))
+        file.stream.seek(0)
 
         if kind is None or kind.mime not in ALLOWED_MIME_TYPES:
-             flash("Загрузите только фото!")
+            flash("Загрузите только фото!")
+            return redirect(url_for("add_product_page"))  # Редирект при ошибке
 
-        #2 убираем опасные символы на всякий случай 
+        # 2 убираем опасные символы
         secure_filename(file.filename)
 
-
-        #3 кодируем фото
+        # 3 кодируем фото
         avatar = b64encode(file.read()).decode("utf-8")
 
-        #СЕСИИ БД
+        # СЕССИИ БД
         with Session.begin() as session:
-            
-            # 3 вывод категорий и их проверка с созданием если их нет
-            category = session.scalar(
-                select(Category)
-                .where(Category.title == category_name)
+            # Проверяем есть ли товар
+            product_check = session.scalar(
+                select(Product)
+                .where(Product.title == title)
             )
 
-            sub_category = session.scalar(
-                select(Subcategory)
-                .where(Subcategory.title == sub_category_name)
-            )
+            if product_check:
+                # ОБНОВЛЯЕМ существующий товар
+                product_check.count += count
+                product_check.price = price
+                product_check.description = description
+                product_check.avatar = avatar
 
-            #если категории нет , нахуй создаем
-            if not category:
-                category = Category(title = category_name)
-                session.add(category)
-                session.flush()
+                if product_check.status == "Нет в наличии":
+                    product_check.status = "В наличии"
+                    flash("Товар снова в наличии!")
+                else:
+                    flash("Данные товара обновлены!")
 
-            if not sub_category:
-                sub_category = Subcategory(title = sub_category_name, category_id = category.id)
-                session.add(sub_category)
-                session.flush()
+                # Категория и подкатегория остаются прежними!
+                sub_category_id = product_check.sub_category_id
 
-            product = Product(
-                title = title,
-                description = description,
-                avatar = avatar,
-                price = price,
-                count = count,
+            else:
+                # СОЗДАЕМ новый товар
+                # Находим или создаем категорию и подкатегорию
+                category = session.scalar(
+                    select(Category)
+                    .where(Category.title == category_name)
+                )
+
+                sub_category = session.scalar(
+                    select(Subcategory)
+                    .where(Subcategory.title == sub_category_name)
+                )
+
+                # Если категории нет - создаем
+                if not category:
+                    category = Category(title=category_name)
+                    session.add(category)
+                    session.flush()
+
+                if not sub_category:
+                    sub_category = Subcategory(title=sub_category_name, category_id=category.id)
+                    session.add(sub_category)
+                    session.flush()
+
+                product = Product(
+                    title=title,
+                    description=description,
+                    avatar=avatar,
+                    price=price,
+                    count=count,
+                    sub_category_id=sub_category.id
+                )
+                session.add(product)
+                flash("Новый товар добавлен!")
                 sub_category_id = sub_category.id
 
-  
-            )
-            #4 cохраняем в память
-            session.add(product)
-
-            #5 получаем айди до закрытия сессии
-            sub_category_id = sub_category.id
-
-        return redirect(url_for("wath_all_products", page = 1, sub_category_id = sub_category_id))
+        return redirect(url_for("wath_all_products", page=1, sub_category_id=sub_category_id))
 
     else:
         flash("Фото обязательно!")
+        return redirect(url_for("add_product_page"))
 
 
 

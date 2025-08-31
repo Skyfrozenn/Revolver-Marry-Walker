@@ -31,23 +31,59 @@
             font-weight: bold;
             margin: 0 10px;
         }
+        
+        .out-of-stock {
+            color: red;
+            font-weight: bold;
+            font-size: 18px;
+        }
+        
+        /* Стиль для флеш сообщения - белый текст в черной рамке */
+        .flash-message {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: white; /* Белый текст */
+            background-color: black; /* Черный фон */
+            padding: 20px 40px;
+            border: 2px solid black; /* Черная рамка */
+            border-radius: 10px;
+            font-size: 18px;
+            text-align: center;
+            z-index: 1000;
+            animation: fadeInOut 3s ease-in-out;
+        }
+        
+        @keyframes fadeInOut {
+            0% { opacity: 0; }
+            10% { opacity: 1; }
+            90% { opacity: 1; }
+            100% { opacity: 0; }
+        }
     </style>
 </head>
-<h1>Revolver Marry Walker </h1>
-
-<b>Постеры</b><br><br>
- 
-<a href="{{url_for('home_page')}}">Выйти</a><br><br>
-<a href="{{url_for('profile')}}">Мой профиль</a><br><br>
-Статистика<br><br>
-<a href="{{url_for('all_category')}}">Товары</a> <br><br><br><br>
-<a href="{{url_for('cart_user_card')}}">Корзина</a><br><br>
-<hr>
-
 <body>
+    <!-- Вывод флеш сообщений -->
+    {% with messages = get_flashed_messages() %}
+        {% if messages %}
+            {% for message in messages %}
+                <div class="flash-message">{{ message }}</div>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+
+    <h1>Revolver Marry Walker </h1>
+    <h2><b>Постеры</b></h2><br><br><br>
+     
+    <a href="{{url_for('home_page')}}">Выйти</a><br><br>
+    <a href="{{url_for('profile')}}">Мой профиль</a><br><br>
+     
+    <a href="{{url_for('all_category')}}">Товары</a> <br><br><br><br>
+    <a href="{{url_for('cart_user_card')}}">Корзина</a><br><br>
+    <hr>
 
     {% if all_products %}
-
         {% for tovars in all_products  | sort(attribute='date_add', reverse=True)  %}
             <img class="photo" src="data:image/*;base64,{{ tovars.avatar }}" alt="Profile Picture" style="max-width: 300px; height: auto; display: block; margin-bottom: 20px;">
             <b>Название - {{tovars.title}}</b> <br><br>
@@ -56,59 +92,81 @@
             <b>Цена - {{tovars.price}}р</b> <br><br>
             <b>Количество на складе - {{tovars.count}}</b> <br><br>
         
+            <!-- Проверка статуса товара -->
+            {% if tovars.status == "В наличии" %}
+                {% set ns = namespace(count_cart = 0) %}
+                {% for cart_tovar in cart %}
+                   {% if cart_tovar.product_id == tovars.id %}
+                        {% set ns.count_cart = cart_tovar.count %}
+                    {% endif %}
+                {% endfor %}
 
-          
-            {% set ns = namespace(count_cart = 0) %}
-            {% for cart_tovar in cart %}
-               {% if cart_tovar.product_id == tovars.id %}
-                    {% set ns.count_cart = cart_tovar.count %}
-                {% endif %}
-            {% endfor %}
-
-            {% if ns.count_cart > 0 %}
-            <div class="cart-controls">
-                <form action="/add_product_cart" method="post">
-                    <input type="hidden" name="csrf_token" value="{{csrf_token()}}">
-                    <input type="hidden" name="_method" value="cards">
-                    <input type="hidden" name="product_id" value="{{tovars.id}}">
-                    <input type="hidden" name="action" value="decrease">
-                    <button type="submit">-</button>
-                    </form>
-
-                <span class="cart-count">Количество в корзине - {{ns.count_cart}}</span>
-
-                {% if ns.count_cart < tovars.count %}
-                <!-- Показываем + только если можно добавить -->
+                {% if ns.count_cart > 0 %}
+                <div class="cart-controls">
                     <form action="/add_product_cart" method="post">
                         <input type="hidden" name="csrf_token" value="{{csrf_token()}}">
-                        <input type="hidden" name="product_id" value="{{tovars.id}}">
                         <input type="hidden" name="_method" value="cards">
-                        <input type="hidden" name="action" value="increase">
-                        <button type="submit">+</button>
+                        <input type="hidden" name="product_id" value="{{tovars.id}}">
+                        <input type="hidden" name="action" value="decrease">
+                        <button type="submit">-</button>
+                        </form>
+
+                    <span class="cart-count">Количество в корзине - {{ns.count_cart}}</span>
+
+                    {% if ns.count_cart < tovars.count %}
+                    <!-- Показываем + только если можно добавить -->
+                        <form action="/add_product_cart" method="post">
+                            <input type="hidden" name="csrf_token" value="{{csrf_token()}}">
+                            <input type="hidden" name="product_id" value="{{tovars.id}}">
+                            <input type="hidden" name="_method" value="cards">
+                            <input type="hidden" name="action" value="increase">
+                            <button type="submit">+</button>
+                        </form>
+                    {% endif %}
+                </div>
+
+                {% else %}
+                <!-- Товара нет в корзине -->
+                    <form action="/add_product_cart" method="post">
+                        <input type="hidden" name="csrf_token" value="{{csrf_token()}}">
+                        <input type="hidden" name="_method" value="cards">
+                        <input type="hidden" name="product_id" value="{{tovars.id}}">
+                        <input type="hidden" name="action" value="add">
+                        <button type="submit">Добавить в корзину</button>
                     </form>
                 {% endif %}
-            </div>
-
+            
             {% else %}
-            <!-- Товара нет в корзине -->
-                <form action="/add_product_cart" method="post">
+                <!-- Товар не в наличии -->
+                <div class="out-of-stock">Товар закончился на складе</div><br><br>
+                <a href="{{url_for('watch_cards_page')}}">Востановить?</a><br><br>
+            {% endif %}
+            
+            <!-- Форма удаления постера -->
+            {% if current_user.role == "Creator" or current_user.role == "Admin" %}
+                <form action="/delete_card" method="post">
                     <input type="hidden" name="csrf_token" value="{{csrf_token()}}">
-                    <input type="hidden" name="_method" value="cards">
                     <input type="hidden" name="product_id" value="{{tovars.id}}">
-                    <input type="hidden" name="action" value="add">
-                    <button type="submit">Добавить в корзину</button>
+                    <button type="submit">Удалить постер</button>
                 </form>
             {% endif %}
+            
             <hr>
         {% endfor %}
     {% else %}
-        <b>Постеров пока нет!</b>
+        <b>Постеров пока что нет 😔 </b>
     {% endif %}
+
+    <!-- Скрипт для автоматического скрытия флеш сообщения -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const flashMessage = document.querySelector('.flash-message');
+            if (flashMessage) {
+                setTimeout(() => {
+                    flashMessage.style.display = 'none';
+                }, 3000); // 3 секунды
+            }
+        });
+    </script>
 </body>
 </html>
-<!--title : Mapped[str]
-    descriprion : Mapped[str]
-    avatar : Mapped[str] = mapped_column( nullable = True)
-    date_add : Mapped[datetime] = mapped_column(server_default = func.now())
-    price : Mapped[int]
-    count : Mapped[int] -->

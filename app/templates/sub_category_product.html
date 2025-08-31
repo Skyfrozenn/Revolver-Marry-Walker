@@ -7,19 +7,25 @@
 
  
     <h1>Revolver Marry Walker</h1><br>
+    <h2>Подкатегории</h2><br><br>
+    <a href="{{url_for('profile')}}">Вернуться в профиль</a><br><br>
     
-    <button onclick="window.history.back()">Назад</button><br><br>
-    <b>Категория - {{sub_category[0].parent_categories.title}}</b><br>
+     
+     
     <hr>
 
     <body>
         {% if sub_category %}
-         
+            <b>Категория - {{sub_category[0].parent_categories.title}}</b><br><br>
 
             {% for sub_cat in sub_category  %}
-                <a href="{{ url_for('wath_all_products', page=1, sub_category_id=sub_cat.id) }}">{{sub_cat.title}}</a>
+                <a href="{{ url_for('wath_all_products', page=1, sub_category_id=sub_cat.id) }}">{{sub_cat.title}}</a><br><br>
             {% endfor %}
+         
+        {% else %}
+            <p>😔 Подкатегорий нет в категории</p>
         {% endif %}
+            
         
     </body>
 

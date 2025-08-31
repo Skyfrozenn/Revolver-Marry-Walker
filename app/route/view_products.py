@@ -37,7 +37,7 @@ def view_sub_category(category_id):
 @login_required
 def wath_all_products(page , sub_category_id):
     #количество товаров на странице
-    PER_PAGE = 1
+    PER_PAGE = 2
 
     with Session() as session:
 
@@ -84,3 +84,79 @@ def wath_all_products(page , sub_category_id):
         sub_category_obj = sub_category_obj
 
     )
+
+
+@app.post("/delete_product")
+def del_prod():
+    product_id = request.form.get("product_id", type = int)
+    page = request.form.get("page", type = int)
+    sub_category_id = request.form.get("sub_category_id", type = int)
+
+    with Session.begin() as session:
+        product = session.scalar(select(Product).where(Product.id == product_id))
+        session.delete(product)
+
+        #считаем новое количество товаров
+        count_product = session.scalar(
+            select(func.count(Product.id))
+            .where(Product.sub_category_id == sub_category_id)
+        )
+
+        #проверяем есть ли товары в саб категории
+
+        sub_category = session.scalar(
+            select(Subcategory)
+            .where(Subcategory.id == sub_category_id)
+            .options(joinedload(Subcategory.parent_categories))
+        )
+        product_in_sub_category = session.scalar(
+            select(func.count(Product.id))
+            .where(Product.sub_category_id == sub_category_id)
+        )
+
+        #проверяем категорию и подкатегорию
+        if product_in_sub_category == 0:
+            category_id = sub_category.parent_categories.id
+            category_name = sub_category.parent_categories.title
+
+            #удаляем подкатегорию
+            session.delete(sub_category)
+ 
+            #находим ебаную категорию
+            category = session.scalar(
+                select(Category)
+                .where(Category.id == category_id)
+            )
+            sub_category_all = session.scalar(
+                select(func.count(Subcategory.id))
+                .where(Subcategory.category_id == category.id)
+            )
+
+            if sub_category_all == 0:
+                session.delete(category)
+                flash(f" Товар {product.title} удален Категория {category_name } и подкатегория {sub_category.title} удалены! Товары закончились")
+                return redirect(url_for('profile'))
+            else:
+                flash(f"Подкатегория {sub_category.title} удалена! Товары закончились")
+                return redirect(url_for('all_category'))
+            
+
+        #новое количество страниц
+        max_count = max(1, ceil(count_product /2))
+
+        page = min(page, max_count)
+
+    return redirect(url_for('wath_all_products' ,page = page, sub_category_id = sub_category_id ))
+     
+
+@app.post("/delete_card")
+def del_card():
+    product_id = request.form.get("product_id")
+
+    with Session.begin() as session:
+
+        card = session.scalar(select(Product).where(Product.id == product_id))
+        flash(f"Постер {card.title} был удален!")
+        session.delete(card)
+    
+    return redirect(url_for('watch_cards'))

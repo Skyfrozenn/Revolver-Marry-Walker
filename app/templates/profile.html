@@ -20,9 +20,42 @@
             box-shadow: 0 0 10px rgba(0,0,0,0.2);
             display: block;
         }
+        
+        /* Стиль для флеш сообщения - белый текст в черной рамке */
+        .flash-message {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: white; /* Белый текст */
+            background-color: black; /* Черный фон */
+            padding: 20px 40px;
+            border: 2px solid black; /* Черная рамка */
+            border-radius: 10px;
+            font-size: 18px;
+            text-align: center;
+            z-index: 1000;
+            animation: fadeInOut 5s ease-in-out;
+        }
+        
+        @keyframes fadeInOut {
+            0% { opacity: 0; }
+            10% { opacity: 1; }
+            90% { opacity: 1; }
+            100% { opacity: 0; }
+        }
     </style>
 </head>
 <body>
+    <!-- Вывод флеш сообщений -->
+    {% with messages = get_flashed_messages() %}
+        {% if messages %}
+            {% for message in messages %}
+                <div class="flash-message">{{ message }}</div>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+
     <h1>Revolver Marry Walker</h1><br>
     <a href="{{url_for('home_page')}}">Выйти</a><br><br>
     <a href="{{url_for('watch_cards')}}">Постеры</a><br><br>
@@ -44,25 +77,30 @@
     {% endif %}
     <br>
     <form action="/uploads_photo" method="post" enctype="multipart/form-data">
-
         <input type="hidden" name="csrf_token" value = "{{ csrf_token()}}" >
         <input type="file" name="photo" accept="image/*" required>
         <button type="submit">Изменить фото</button>
-
     </form>
     <hr>
 
-    </form>
-    <hr>
     <b>{{user.name}}</b> <b>({{user.role}})</b><br><br>
     Дата регистрации : {{user.join}} <br><br>
-    {% if count %}
+    {% if count is not none %}
         Количество купленных товаров : {{count}}
     {% else %}
         Количество купленных товаров : 0
     {% endif %}
     
-    
-
+    <!-- Скрипт для автоматического скрытия флеш сообщения -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const flashMessage = document.querySelector('.flash-message');
+            if (flashMessage) {
+                setTimeout(() => {
+                    flashMessage.style.display = 'none';
+                }, 5000); // 5 секунд
+            }
+        });
+    </script>
 </body>
 </html>
