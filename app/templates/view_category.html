@@ -63,6 +63,7 @@
             if (flashMessage) {
                 setTimeout(() => {
                     flashMessage.style.display = 'none';
+                    flashMessage.remove()
                 }, 5000); // 5 секунд
             }
         });

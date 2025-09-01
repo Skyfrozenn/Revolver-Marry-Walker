@@ -126,6 +126,7 @@
             if (flashMessage) {
                 setTimeout(() => {
                     flashMessage.style.display = 'none';
+                    flashMessage.remove()
                 }, 1000);
             }
         });

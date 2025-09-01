@@ -3,7 +3,7 @@ import filetype
 from .auth import login_required, current_user, render_template, request, flash, redirect, url_for
 
 from .. import app
-from ..database import Session, func,  select, User, Product, Purchase_history
+from ..database import Session, func,  select, User, Product, Purchase_history, selectinload , desc, Subcategory, Category
 
 from base64 import b64encode
 from werkzeug.utils import secure_filename
@@ -57,7 +57,54 @@ def update_photo():
     return redirect(url_for('profile'))
 
 
+@app.get("/statistics")
+def state():
+    with Session() as session:
+        # 1. Самый прибыльный товар
+        max_product = session.execute(
+            select(Product, func.sum(Purchase_history.spent).label("total_revenue"))
+            .join(Product.order_item)
+            .group_by(Product.id)
+            .order_by(desc("total_revenue"))
+            .limit(1)
+        ).first()
 
+        # 2. Самый частый покупатель
+        max_user = session.execute(
+            select(User, func.count(Purchase_history.id).label("purchase_count"))
+            .join(User.order_item)
+            .group_by(User.id)
+            .order_by(desc("purchase_count"))
+            .limit(1)
+        ).first()
+
+        # 3. Общая статистика
+        total_count = session.scalar(select(func.sum(Purchase_history.count))) or 0
+        total_revenue = session.scalar(select(func.sum(Purchase_history.spent))) or 0
+
+        # 4. Самая популярная категория
+        pop_category = session.execute(
+            select(
+                Subcategory.title.label("sub_category"),
+                Category.title.label("category_name"), 
+                func.count(Purchase_history.id).label("total_purchases")
+            )
+            .join(Subcategory.parent_categories)
+            .join(Subcategory.sub_category_products)
+            .join(Product.order_item)
+            .group_by(Subcategory.title, Category.title)
+            .order_by(desc(func.count(Purchase_history.id)))
+            .limit(1)
+        ).first()
+
+    return render_template(
+        "static.html",
+        max_product=max_product,
+        max_user=max_user,
+        total_count=total_count,
+        total_revenue=total_revenue,
+        pop_category=pop_category
+    )
 
 
 

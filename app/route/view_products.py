@@ -102,44 +102,7 @@ def del_prod():
             .where(Product.sub_category_id == sub_category_id)
         )
 
-        #проверяем есть ли товары в саб категории
-
-        sub_category = session.scalar(
-            select(Subcategory)
-            .where(Subcategory.id == sub_category_id)
-            .options(joinedload(Subcategory.parent_categories))
-        )
-        product_in_sub_category = session.scalar(
-            select(func.count(Product.id))
-            .where(Product.sub_category_id == sub_category_id)
-        )
-
-        #проверяем категорию и подкатегорию
-        if product_in_sub_category == 0:
-            category_id = sub_category.parent_categories.id
-            category_name = sub_category.parent_categories.title
-
-            #удаляем подкатегорию
-            session.delete(sub_category)
- 
-            #находим ебаную категорию
-            category = session.scalar(
-                select(Category)
-                .where(Category.id == category_id)
-            )
-            sub_category_all = session.scalar(
-                select(func.count(Subcategory.id))
-                .where(Subcategory.category_id == category.id)
-            )
-
-            if sub_category_all == 0:
-                session.delete(category)
-                flash(f" Товар {product.title} удален Категория {category_name } и подкатегория {sub_category.title} удалены! Товары закончились")
-                return redirect(url_for('profile'))
-            else:
-                flash(f"Подкатегория {sub_category.title} удалена! Товары закончились")
-                return redirect(url_for('all_category'))
-            
+      
 
         #новое количество страниц
         max_count = max(1, ceil(count_product /2))

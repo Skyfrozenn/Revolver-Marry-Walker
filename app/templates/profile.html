@@ -66,6 +66,10 @@
     {% endif %}
     <br><br>
     <a href="{{url_for('cart_user_card')}}">Корзина</a><br><br>
+    {% if current_user.role == "Creator" or current_user.role == "Admin"  %}
+        <a href="{{url_for('state')}}">Статистика</a>
+    {% endif %}
+
     <hr>
     
     {% if user.photo_uploads %}
@@ -93,14 +97,21 @@
     
     <!-- Скрипт для автоматического скрытия флеш сообщения -->
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            const flashMessage = document.querySelector('.flash-message');
-            if (flashMessage) {
+         <!-- Скрипт для автоматического скрытия флеш сообщений -->
+     
+             document.addEventListener('DOMContentLoaded', function() {
+            const flashMessages = document.querySelectorAll('.flash-message');
+            flashMessages.forEach((message, index) => {
+                // Добавляем задержку для каждого сообщения, чтобы они не накладывались
                 setTimeout(() => {
-                    flashMessage.style.display = 'none';
-                }, 5000); // 5 секунд
-            }
+                    message.style.display = 'none';
+                    message.remove()
+                }, 3000 + (index * 100));
+                 // 3 секунды + небольшая задержка между сообщениями
+            });
         });
     </script>
 </body>
 </html>
+     
+ 

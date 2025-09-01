@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Статистика</title>
+    <style>
+        .stat-card {
+            border: 2px solid #ccc;
+            padding: 20px;
+            margin: 15px 0;
+            border-radius: 10px;
+            background-color: #f9f9f9;
+        }
+        .stat-value {
+            font-size: 24px;
+            font-weight: bold;
+            color: #2c3e50;
+        }
+    </style>
+</head>
+<body>
+    <h1>Revolver Marry Walker</h1>
+    <b>Статистика</b>  <br><br><br>
+    
+    <a href="{{url_for('profile')}}">Вернуться в профиль</a><br><br>
+
+    <!-- 1. Самый прибыльный товар -->
+    <div class="stat-card">
+        <h3>Самый прибыльный товар:</h3>
+        {% if max_product %}
+            {% set product, revenue = max_product %}
+            <p class="stat-value">{{ product.title }}</p>
+            <p>Выручка: {{ revenue }}р</p>
+        {% else %}
+            <p>Нет данных</p>
+        {% endif %}
+    </div>
+
+    <!-- 2. Самый частый покупатель -->
+    <div class="stat-card">
+        <h3>Самый частый покупатель:</h3>
+        {% if max_user %}
+            {% set user, purchase_count = max_user %}
+            <p class="stat-value">{{ user.name }}</p>
+            <p>Количество покупок: {{ purchase_count }}</p>
+        {% else %}
+            <p>Нет данных</p>
+        {% endif %}
+    </div>
+
+    <!-- 3. Общая статистика -->
+    <div class="stat-card">
+        <h3>Общая статистика:</h3>
+        <p class="stat-value">Всего продаж: {{ total_count }} шт.</p>
+        <p class="stat-value">Общая выручка: {{ total_revenue }}р</p>
+    </div>
+
+    <!-- 4. Самая популярная категория -->
+    <div class="stat-card">
+        <h3>Самая популярная категория:</h3>
+        {% if pop_category %}
+            {% set sub_name, cat_name, purchases = pop_category %}
+            <p class="stat-value">{{ cat_name }} / {{ sub_name }}</p>
+            <p>Количество покупок: {{ purchases }}</p>
+        {% else %}
+            <p>Нет данных</p>
+        {% endif %}
+    </div>
+</body>
+</html>
