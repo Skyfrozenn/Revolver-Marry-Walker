@@ -34,9 +34,10 @@
     {% for purchase, product in purchases %}
     <div class="purchase-item">
         <img src="data:image/*;base64,{{ product.avatar }}" width="100">
-        <h3>{{ product.title }}</h3>
+        <p>{{ product.title }}</p>
         <p>Количество куплено: {{ purchase.count }}шт</p>
-        <p>Сумма: {{ purchase.spent }}р</p> <br><br>
+        <p>Сумма: {{ purchase.spent }}р</p>  
+        <p>Дата покупки {{purchase.join}}</p>
 
         <form action="/delete_history_product" method="post">
             <input type="hidden" name="csrf_token" value="{{csrf_token()}}">
@@ -44,12 +45,7 @@
             <input type="hidden" name="method" value="one_delete">
             <button type="submit">Удалить</button>
 
-        </form> <br><br>
-            <form action="/delete_history_product" method="post">
-                <input type="hidden" name="csrf_token" value="{{csrf_token()}}">
-                <input type="hidden" name="method" value="all_delete">
-                <button type="submit">Очистить историю покупок</button><br><br>
-            </form>
+        
          
     </div>
     <hr>

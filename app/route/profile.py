@@ -122,6 +122,7 @@ def purchase_history():
             )
             .join(Product.order_item)  # JOIN
             .where(Purchase_history.user_id == current_user.id)
+            .order_by(desc(Purchase_history.join))
         ).all()
 
     return render_template("purchase_history.html", purchases=purchases)
