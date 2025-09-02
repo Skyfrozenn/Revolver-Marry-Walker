@@ -34,6 +34,7 @@ def profile():
 
 
 @app.post("/uploads_photo")
+@login_required
 def update_photo():
     file = request.files.get("photo")
 
@@ -58,6 +59,7 @@ def update_photo():
 
 
 @app.get("/statistics")
+@login_required
 def state():
     with Session() as session:
         # 1. Самый прибыльный товар
@@ -107,6 +109,86 @@ def state():
     )
 
 
+ 
+@app.get("/purchase_history")
+@login_required
+def purchase_history():
+    with Session() as session:
+        # Получаем ВСЕ покупки с информацией о товарах
+        purchases = session.execute(
+            select(
+                Purchase_history,  # ← Вся история покупок
+                Product            # ← Данные товара
+            )
+            .join(Product.order_item)  # JOIN
+            .where(Purchase_history.user_id == current_user.id)
+        ).all()
+
+    return render_template("purchase_history.html", purchases=purchases)
+
+      
+
+    
+@app.post("/delete_history_product")
+@login_required
+def del_pursh_prod():
+    method = request.form.get("method")
+    with Session.begin() as session:
+        if method == "one_delete":
+            pursh_product_id = request.form.get("pursh_product_id")
+            pursh_product = session.scalar(select(Purchase_history).where(Purchase_history.id == pursh_product_id))
+            session.delete(pursh_product)
+            return redirect(url_for('purchase_history'))
+        
+        elif method == "all_delete":
+            pursh_user_product = session.scalars(
+                select(Purchase_history)
+                .where(Purchase_history.user_id == current_user.id)
+            ).all()
+
+            for del_prod in pursh_user_product:
+                session.delete(del_prod)
+            return redirect(url_for('purchase_history'))
 
 
 
+@app.get("/list_role_user")
+@login_required
+def update_role_user():
+    with Session() as session:
+        role_user_list = session.scalars(
+            select(User)
+            .where(User.role == "user")
+        ).all()
+    return render_template("list_role_user.html", role_user_list = role_user_list)
+
+
+
+@app.post("/add_new_admin")
+@login_required
+def add_new_admi():
+    user_id = request.form.get("user_id")
+    with Session.begin() as session:
+        user_admin = session.scalar(select(User).where(User.id == user_id))
+        user_admin.role = "Admin"
+    return redirect(url_for('update_role_user'))
+
+
+@app.get("/list_role_admin")
+@login_required
+def update_role_admin():
+    with Session() as session:
+        role_user_list = session.scalars(
+            select(User)
+            .where(User.role == "Admin")
+        ).all()
+    return render_template("list_role_admin.html", role_user_list = role_user_list)
+
+
+@app.post("/remove_admin")
+def remove_admin():
+    user_id = request.form.get("user_id")
+    with Session.begin() as session:
+        user_admin = session.scalar(select(User).where(User.id == user_id))
+        user_admin.role = "user"
+    return redirect(url_for('update_role_admin'))

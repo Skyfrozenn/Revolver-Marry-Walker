@@ -69,6 +69,13 @@
     {% if current_user.role == "Creator" or current_user.role == "Admin"  %}
         <a href="{{url_for('state')}}">Статистика</a>
     {% endif %}
+    <br><br><br>
+    <a href="{{url_for('purchase_history')}}">История покупок</a> <br><br>
+
+    {% if current_user.role == "Creator" or current_user.role == "Admin"  %}
+        <a href="{{url_for('update_role_user')}}">Назначить админов</a>
+    {% endif %}
+    
 
     <hr>
     

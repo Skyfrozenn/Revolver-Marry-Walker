@@ -139,7 +139,9 @@
             {% else %}
                 <!-- Товар не в наличии -->
                 <div class="out-of-stock">Товар закончился на складе</div><br><br>
-                <a href="{{url_for('watch_cards_page')}}">Востановить?</a><br><br>
+                {% if current_user.role == "Creator" or current_user.role == "Admin" %}
+                    <a href="{{url_for('watch_cards_page')}}">Востановить?</a><br><br>
+                {% endif %}
             {% endif %}
             
             <!-- Форма удаления постера -->

@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>История покупок</title>
+    <style>
+        .product-card {
+            border: 1px solid #ccc;
+            padding: 20px;
+            margin: 10px 0;
+            border-radius: 5px;
+        }
+        .product-card img {
+            max-width: 200px;
+            height: auto;
+        }
+    </style>
+</head>
+<body>
+    <h1>Revolver Marry Walker</h1>
+    <h2>История покупок</h2><br><br>
+    <b>При уменьшения количества купленного товара или при очищение истории покупок,количество купленных товаров в профиле сбрасывается!</b>
+    <br><br>
+    
+    <a href="{{url_for('profile')}}">Вернуться в профиль</a><br><br>
+    <form action="/delete_history_product" method="post">
+        <input type="hidden" name="csrf_token" value="{{csrf_token()}}">
+        <input type="hidden" name="method" value="all_delete">
+        <button type="submit">Очистить историю покупок</button><br><br>
+    </form>
+    <br><br>
+    <hr>
+
+    {% for purchase, product in purchases %}
+    <div class="purchase-item">
+        <img src="data:image/*;base64,{{ product.avatar }}" width="100">
+        <h3>{{ product.title }}</h3>
+        <p>Количество куплено: {{ purchase.count }}шт</p>
+        <p>Сумма: {{ purchase.spent }}р</p> <br><br>
+
+        <form action="/delete_history_product" method="post">
+            <input type="hidden" name="csrf_token" value="{{csrf_token()}}">
+            <input type="hidden" name="pursh_product_id" value="{{purchase.id}}">
+            <input type="hidden" name="method" value="one_delete">
+            <button type="submit">Удалить</button>
+
+        </form> <br><br>
+            <form action="/delete_history_product" method="post">
+                <input type="hidden" name="csrf_token" value="{{csrf_token()}}">
+                <input type="hidden" name="method" value="all_delete">
+                <button type="submit">Очистить историю покупок</button><br><br>
+            </form>
+         
+    </div>
+    <hr>
+{% else %}
+    <p>😔 История покупок пуста</p>
+{% endfor %}
+</body>
+</html>

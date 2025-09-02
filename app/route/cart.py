@@ -160,63 +160,57 @@ def cart_user_product():
 @app.post("/buy_product")
 def buy_prod():
     product_id = request.form.get("product_id", type=int)
-    count_product = request.form.get("count_product", type=int)
-    place = request.form.get("place")
+    place = request.form.get("place")  # count_product не нужен из формы!
 
     with Session.begin() as session:
-        # объект из корзины
+        # объект из корзины (ЗДЕСЬ настоящее количество!)
         cart_obj = session.scalar(                                                           
             select(Cart)
             .where(Cart.product_id == product_id)
             .where(Cart.user_id == current_user.id)
         )
 
-        # сам товар с подкатегорией
+        # сам товар
         product = session.scalar(
             select(Product)
             .where(Product.id == product_id)
-            .options(joinedload(Product.sub_category).joinedload(Subcategory.parent_categories))
         )
         
+        # Настоящее количество из корзины!
+        real_count = cart_obj.count
+        
         # сколько потратил юзер
-        spent = count_product * product.price
+        spent = real_count * product.price
 
         # создаем объект в истории покупок
         purh_history_obj = Purchase_history(
-            count=count_product,
+            count=real_count,  # ← Вот правильное количество!
             spent=spent,
             user_id=current_user.id,
             product_id=product_id
         )
-
-        
         
         # добавляем объект в историю покупок
         session.add(purh_history_obj)
+        session.flush()
         
         # уменьшаем количество товара на складе
-        product.count -= count_product
+        product.count -= real_count
         
-        # Если товар закончился - удаляем его и проверяем подкатегорию
+        # Проверяем статус
         if product.count == 0:
-             
-            # Удаляем товар
             product.status = "Нет в наличии"
             flash(f"Товар '{product.title}' закончился!")
         
         # удаляем товар из корзины
         session.delete(cart_obj)
         
-       
+        flash("Куплено!")
 
     if place == "cards":
-        flash("Куплено!")
         return redirect(url_for('cart_user_card'))
-    
     elif place == "products":
-        flash("Куплено!")
         return redirect(url_for('cart_user_product'))
-
 
 
         

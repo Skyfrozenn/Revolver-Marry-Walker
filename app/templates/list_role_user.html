@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Revolver Marry Walker - Список пользователей</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background-color: #f4f4f4;
+        }
+        h1 {
+            color: #333;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        hr {
+            border: 1px solid #ddd;
+            margin: 20px 0;
+        }
+        .user-list {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .user-item {
+            padding: 10px;
+            border-bottom: 1px solid #eee;
+        }
+        .user-item:last-child {
+            border-bottom: none;
+        }
+        .back-button {
+            display: inline-block;
+            padding: 10px 20px;
+            background-color: #007bff;
+            color: white;
+            text-decoration: none;
+            border-radius: 4px;
+            margin-top: 20px;
+        }
+        .back-button:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+    <h1>Revolver Marry Walker</h1>
+    <a href="{{url_for('update_role_admin')}}">Список Админов</a><br><br>
+    <a href="{{ url_for('profile') }}" class="back-button">Вернуться в профиль</a>
+    <hr>
+    
+    <div class="user-list">
+        <h2>Список пользователей с ролью "user"</h2>
+        
+        {% if role_user_list %}
+            {% for user in role_user_list %}
+                <div class="user-item">
+                    <strong>ID:</strong> {{ user.id }}<br>
+                    <strong>Имя пользователя:</strong> {{ user.name }}<br>
+                    <strong>Роль:</strong> {{ user.role }} <br>
+                    <form action="/add_new_admin" method="post">
+                        <input type="hidden" name="csrf_token" value="{{csrf_token()}}">
+                        <input type="hidden" name="user_id" value="{{user.id}}">
+                        <br>
+                        <button type="submit">Назначить администратором</button><br>
+
+                    </form>
+                    
+                </div>
+            {% endfor %}
+        {% else %}
+            <p>Пользователей с ролью "user" не найдено</p>
+        {% endif %}
+    </div>
+
+    
+</body>
+</html>

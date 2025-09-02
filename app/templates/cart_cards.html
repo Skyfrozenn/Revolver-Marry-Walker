@@ -79,7 +79,6 @@
                 <form action="/buy_product" method="post">
                     <input type="hidden" name="csrf_token" value="{{csrf_token()}}">
                     <input type="hidden" name="product_id" value="{{product.id}}">
-                    <input type="hidden" name="count_product" value="{{cart_count}}">
                     <input type="hidden" name="place" value="cards">
                     <button type="submit">Купить товар</button>
                 </form>

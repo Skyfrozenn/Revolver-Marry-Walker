@@ -116,7 +116,7 @@ def reg():
 
 
             #черновое сохранение в бд
-            new_user = User(name = username, password = hash_password, role = "Creator")
+            new_user = User(name = username, password = hash_password)
 
              # добавляем в бд
             db_session.add(new_user)
