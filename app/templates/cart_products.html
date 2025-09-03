@@ -4,33 +4,174 @@
     <meta charset="UTF-8">
     <title>Корзина товаров</title>
     <style>
-        .card img {
-            max-width: 300px;
-            height: auto;
-            display: block;
+        body {
+            background: url('/static/images/rdr2.webp') no-repeat center center fixed;
+            background-size: cover;
+            margin: 0;
+            padding: 20px;
+            font-family: Arial, sans-serif;
+            color: white;
+            min-height: 100vh;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 20px;
+            background: rgba(0, 0, 0, 0.5);
+            border-radius: 8px;
             margin-bottom: 20px;
         }
-        .card {
-            border: 1px solid #ccc;
-            padding: 20px;
-            margin: 10px 0;
-            border-radius: 5px;
+
+        h1 {
+            color: white;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7);
+            margin: 0;
         }
+
+        .section-title {
+            text-align: center;
+            font-size: 24px;
+            font-weight: bold;
+            color: white;
+            margin: 20px 0;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 15px;
+        }
+
+        .nav-link {
+            padding: 8px 16px;
+            background: black;
+            color: white;
+            text-decoration: none;
+            border: 2px solid #333;
+            border-radius: 4px;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+
+        .nav-link:hover {
+            background: #222;
+            border-color: #555;
+        }
+
+        hr {
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            margin: 20px 0;
+        }
+
+        .products-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 30px;
+            margin: 30px 0;
+        }
+
+        .card {
+            background: rgba(0, 0, 0, 0.6);
+            padding: 20px;
+            border-radius: 10px;
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .card:hover {
+            background: rgba(30, 144, 255, 0.3);
+            border-color: rgba(100, 180, 255, 0.5);
+            transform: translateY(-5px);
+        }
+
+        .category-info {
+            background: rgba(0, 0, 0, 0.4);
+            padding: 10px;
+            border-radius: 5px;
+            margin-bottom: 15px;
+        }
+
+        .category-info p {
+            margin: 5px 0;
+            font-size: 14px;
+            color: #ccc;
+        }
+
+        .card img {
+            width: 100%;
+            height: 250px;
+            object-fit: cover;
+            border-radius: 8px;
+            margin-bottom: 15px;
+        }
+
+        .card h3 {
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 10px;
+            color: white;
+        }
+
+        .card p {
+            margin-bottom: 8px;
+            font-size: 14px;
+            color: #ccc;
+        }
+
         .cart-controls {
             display: flex;
             align-items: center;
             gap: 10px;
+            margin: 15px 0;
         }
+
         .cart-controls form {
             margin: 0;
         }
-        .category-info {
-            background-color: #f5f5f5;
-            padding: 10px;
-            margin-bottom: 15px;
-            border-radius: 5px;
+
+        .cart-controls button {
+            padding: 8px 15px;
+            background: black;
+            color: white;
+            border: 2px solid #333;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
         }
-        /* Обновляю стили для флеш сообщений */
+
+        .cart-controls button:hover {
+            background: #222;
+            border-color: #555;
+        }
+
+        .buy-form {
+            margin: 15px 0;
+        }
+
+        .buy-form button {
+            padding: 12px 25px;
+            background: black;
+            color: white;
+            border: 2px solid #333;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 16px;
+        }
+
+        .buy-form button:hover {
+            background: #222;
+            border-color: #555;
+        }
+
+        .empty-message {
+            text-align: center;
+            font-size: 24px;
+            color: #ccc;
+            margin: 50px 0;
+        }
+
         .flash-messages-container {
             position: fixed;
             top: 50%;
@@ -61,7 +202,6 @@
     </style>
 </head>
 <body>
-    <!-- Контейнер для флеш сообщений -->
     <div class="flash-messages-container">
         {% with messages = get_flashed_messages() %}
             {% if messages %}
@@ -72,78 +212,77 @@
         {% endwith %}
     </div>
 
-    <h1>Revolver Marry Walker</h1>
-    <b>КОРЗИНА ТОВАРОВ</b>  <br><br><br>
-    
-    <a href="{{url_for('profile')}}">Вернуться в профиль</a><br><br>
-    <a href="{{url_for('cart_user_card')}}">Корзина Постеров</a>
-     
+    <div class="header">
+        <h1>Revolver Marry Walker</h1>
+        <div class="nav-links">
+            <a href="{{url_for('profile')}}" class="nav-link">Вернуться в профиль</a>
+            <a href="{{url_for('cart_user_card')}}" class="nav-link">Корзина Постеров</a>
+        </div>
+    </div>
+
+    <div class="section-title">КОРЗИНА ТОВАРОВ</div>
+
     <hr>
 
     {% if user_prod %}
-        {% for product, cart_count, date_add in user_prod %}
-            <div class="card">
-                <!-- Информация о категории и подкатегории -->
-                <div class="category-info">
-                    <p>Категория: {{ product.sub_category.parent_categories.title }}</p>
-                    <p>Подкатегория: {{ product.sub_category.title}}</p>
-                </div>
-                
-                <img src="data:image/*;base64,{{ product.avatar }}" alt="{{ product.title }}">
-                <h3>Название - {{ product.title }}</h3>
-                <p>Описание -  {{ product.description }}</p>
-                <p>Цена: {{ product.price }}р</p>
-                <p>Дата добавления : {{date_add}}</p><br><br>
+        <div class="products-grid">
+            {% for product, cart_count, date_add in user_prod %}
+                <div class="card">
+                    <div class="category-info">
+                        <p>Категория: {{ product.sub_category.parent_categories.title }}</p>
+                        <p>Подкатегория: {{ product.sub_category.title}}</p>
+                    </div>
+                    
+                    <img src="data:image/*;base64,{{ product.avatar }}" alt="{{ product.title }}">
+                    <h3>{{ product.title }}</h3>
+                    <p>{{ product.description }}</p>
+                    <p>Цена: {{ product.price }}р</p>
+                    <p>Дата добавления: {{ date_add }}</p>
 
-                <form action="/buy_product" method="post">
-                    <input type="hidden" name="csrf_token" value="{{csrf_token()}}">
-                    <input type="hidden" name="product_id" value="{{product.id}}">
-                    <input type="hidden" name="count_product" value="{{cart_count}}">
-                    <input type="hidden" name="place" value="products">
-                    <button type="submit">Купить товар</button>
-                </form>
-
-                
-                <div class="cart-controls">
-                    <form action="/decrease_products_cart" method="post">
+                    <form action="/buy_product" method="post" class="buy-form">
                         <input type="hidden" name="csrf_token" value="{{csrf_token()}}">
-                        <input type="hidden" name="place" value="product">
                         <input type="hidden" name="product_id" value="{{product.id}}">
-                        <input type="hidden" name="method" value="decrease">
-                        <button type="submit">-</button>
+                        <input type="hidden" name="count_product" value="{{cart_count}}">
+                        <input type="hidden" name="place" value="products">
+                        <button type="submit">Купить товар</button>
                     </form>
-                    
-                    <p>В корзине: {{ cart_count }} шт.</p>
-                    <br>
-                    
-                    {% if cart_count > 1 %}
+
+                    <div class="cart-controls">
                         <form action="/decrease_products_cart" method="post">
                             <input type="hidden" name="csrf_token" value="{{csrf_token()}}">
                             <input type="hidden" name="place" value="product">
                             <input type="hidden" name="product_id" value="{{product.id}}">
-                            <input type="hidden" name="method" value="all_del">
-                            <button type="submit">Удалить все</button>
+                            <input type="hidden" name="method" value="decrease">
+                            <button type="submit">-</button>
                         </form>
-                        <br>
-                    {% endif %}
+                        
+                        <p>В корзине: {{ cart_count }} шт.</p>
+                        
+                        {% if cart_count > 1 %}
+                            <form action="/decrease_products_cart" method="post">
+                                <input type="hidden" name="csrf_token" value="{{csrf_token()}}">
+                                <input type="hidden" name="place" value="product">
+                                <input type="hidden" name="product_id" value="{{product.id}}">
+                                <input type="hidden" name="method" value="all_del">
+                                <button type="submit">Удалить все</button>
+                            </form>
+                        {% endif %}
+                    </div>
                 </div>
-            </div>
-        {% endfor %}
+            {% endfor %}
+        </div>
     {% else %}
-        <p>😔 В корзине нет товаров</p>
+        <div class="empty-message">😔 В корзине нет товаров</div>
     {% endif %}
 
-    <!-- Скрипт для автоматического скрытия флеш сообщений -->
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             const flashMessages = document.querySelectorAll('.flash-message');
             flashMessages.forEach((message, index) => {
-                // Добавляем задержку для каждого сообщения, чтобы они не накладывались
                 setTimeout(() => {
                     message.style.display = 'none';
                     message.remove()
                 }, 3000 + (index * 100));
-                 // 3 секунды + небольшая задержка между сообщениями
             });
         });
     </script>

@@ -4,28 +4,122 @@
     <meta charset="UTF-8">
     <title>Revolver Marry_Walker | Регистрация</title>
     <style>
+        body {
+            background: url('/static/images/rdr2.webp') no-repeat center center fixed;
+            background-size: cover;
+            margin: 0;
+            padding: 20px;
+            font-family: Arial, sans-serif;
+            color: white;
+            min-height: 100vh;
+        }
+
         /* Стили для флеш-сообщений */
         .flash-messages {
             margin: 20px auto;
-            max-width: 600px;
+            max-width: 400px;
         }
         
         .flash-message {
-            background: #ff4444;
+            background: rgba(255, 68, 68, 0.9);
             color: white;
-            padding: 15px 20px;
+            padding: 12px 15px;
             margin: 10px 0;
             border: 2px solid #cc0000;
-            border-radius: 8px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            border-radius: 6px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
             opacity: 1;
             transition: opacity 0.5s ease-in-out;
             text-align: center;
             font-weight: bold;
+            font-size: 14px;
         }
         
         .flash-message.fade-out {
             opacity: 0;
+        }
+
+        h1 {
+            text-align: center;
+            color: white;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7);
+            margin-bottom: 10px;
+        }
+
+        hr {
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            margin: 15px 0;
+            width: 80%;
+            max-width: 400px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        form {
+            background: rgba(0, 0, 0, 0.7);
+            padding: 25px;
+            border-radius: 8px;
+            max-width: 350px;
+            margin: 0 auto;
+            border: 2px solid rgba(255, 255, 255, 0.1);
+        }
+
+        label {
+            color: white;
+            font-weight: bold;
+            display: block;
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+
+        input[type="text"],
+        input[type="password"] {
+            width: 90%;
+            padding: 10px;
+            margin: 6px 0;
+            background: black;
+            border: 2px solid #333;
+            border-radius: 4px;
+            color: white;
+            font-size: 14px;
+        }
+
+        input[type="text"]::placeholder,
+        input[type="password"]::placeholder {
+            color: #888;
+            font-size: 13px;
+        }
+
+        button[type="submit"],
+        input[type="submit"] {
+            width: 95%;
+            padding: 10px;
+            background: black;
+            color: white;
+            border: 2px solid #333;
+            border-radius: 4px;
+            font-size: 14px;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 8px;
+        }
+
+        button[type="submit"]:hover,
+        input[type="submit"]:hover {
+            background: #222;
+            border-color: #555;
+        }
+
+        .form-divider {
+            text-align: center;
+            color: white;
+            margin: 15px 0;
+            font-weight: bold;
+            font-size: 14px;
+        }
+
+        .form-section {
+            margin-bottom: 5px;
         }
     </style>
 </head>
@@ -50,10 +144,10 @@
         {{ form.hidden_tag() }} <!--Токен авторизации-->
 
         <!--Поля ввода логина-->
-        {{form.username.label}}
-        <br>
-        {{form.username(placeholder = "Введите имя")}}
-        <br>
+        <div class="form-section">
+            {{form.username.label}}
+            {{form.username(placeholder = "Введите имя")}}
+        </div>
 
         {% if form.username.errors %}
             {% for error in form.username.errors %}
@@ -62,8 +156,9 @@
         {% endif %}
 
         <!--Поле ввода пароля-->
-        {{form.password(placeholder = "Введите пароль")}}
-        <br>
+        <div class="form-section">
+            {{form.password(placeholder = "Введите пароль")}}
+        </div>
 
         {% if form.password.errors %}
             {% for error in form.password.errors %}
@@ -75,13 +170,13 @@
         {{form.submit()}}
     </form>
 
-    <br><br>
-    Уже есть аккаунт?<br>
+    <div class="form-divider">Уже есть аккаунт?</div>
+
     <form method="post" action="/entrance">
         <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-        <input type="text" name="username" placeholder="Введите имя"><br>
-        <input type="password" name="password" placeholder="Введите пароль"><br>
-        <button type="submit">Войти</button><br>
+        <input type="text" name="username" placeholder="Введите имя">
+        <input type="password" name="password" placeholder="Введите пароль">
+        <button type="submit">Войти</button>
     </form>
 
     <script>
@@ -104,4 +199,3 @@
     </script>
 </body>
 </html>
- 

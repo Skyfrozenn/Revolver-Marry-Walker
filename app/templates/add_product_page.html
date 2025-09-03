@@ -4,6 +4,120 @@
     <meta charset="UTF-8">
     <title>Добавить товар</title>
     <style>
+        body {
+            background: url('/static/images/rdr2.webp') no-repeat center center fixed;
+            background-size: cover;
+            margin: 0;
+            padding: 20px;
+            font-family: Arial, sans-serif;
+            color: white;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
+            max-width: 800px;
+            padding: 10px 20px;
+            background: rgba(0, 0, 0, 0.5);
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+
+        h1 {
+            color: white;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7);
+            margin: 0;
+        }
+
+        .nav-buttons {
+            display: flex;
+            gap: 15px;
+        }
+
+        .nav-button {
+            padding: 8px 16px;
+            background: black;
+            color: white;
+            text-decoration: none;
+            border: 2px solid #333;
+            border-radius: 4px;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .nav-button:hover {
+            background: #222;
+            border-color: #555;
+        }
+
+        hr {
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            margin: 20px 0;
+            width: 100%;
+            max-width: 800px;
+        }
+
+        form {
+            background: rgba(0, 0, 0, 0.6);
+            padding: 30px;
+            border-radius: 10px;
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            width: 100%;
+            max-width: 500px;
+        }
+
+        input[type="file"],
+        input[type="text"] {
+            width: 100%;
+            padding: 12px;
+            margin: 10px 0;
+            background: black;
+            border: 2px solid #333;
+            border-radius: 5px;
+            color: white;
+            font-size: 16px;
+            box-sizing: border-box;
+        }
+
+        input[type="file"]::placeholder,
+        input[type="text"]::placeholder {
+            color: #888;
+        }
+
+        button[type="submit"] {
+            width: 100%;
+            padding: 15px;
+            background: black;
+            color: white;
+            border: 2px solid #333;
+            border-radius: 5px;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 15px;
+            transition: all 0.3s ease;
+        }
+
+        button[type="submit"]:hover {
+            background: #222;
+            border-color: #555;
+            transform: translateY(-2px);
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: white;
+        }
+
         .flash-messages {
             position: fixed;
             top: 20px;
@@ -36,13 +150,16 @@
 </head>
 
 <body>
-    <h1>Revolver Marry Walker</h1><br>
-    <a href="{{url_for('profile')}}">Вернуться в профиль</a><br><br>
-    <button onclick="window.history.back()">Назад</button>
+    <div class="header">
+        <h1>Revolver Marry Walker</h1>
+        <div class="nav-buttons">
+            <a href="{{url_for('profile')}}" class="nav-button">Вернуться в профиль</a>
+            <button class="nav-button" onclick="window.history.back()">Назад</button>
+        </div>
+    </div>
 
     <hr>
-    <br>
-    
+
     <!-- Flash сообщения -->
     <div class="flash-messages">
         {% with messages = get_flashed_messages(with_categories=true) %}
@@ -56,15 +173,29 @@
 
     <form action="/add_new_product" method="post" enctype="multipart/form-data">
         <input type="hidden" name="csrf_token" value="{{csrf_token()}}">
-        <input type="file" name="photo" accept="image/*" required><br><br>
-        <input type="text" name="category" placeholder="Введите имя категории товара" required><br><br>
-        <input type="text" name="sub_category" placeholder="Введите подкатегорию товара" required><br><br>
-        <input type="text" name="title" placeholder="Введите название товара" required><br><br>
-        <input type="text" name="description" placeholder="Введите описание товара" required><br><br>
-        <input type="text" name="price" placeholder="Укаите цену товара" required><br><br>
-        <input type="text" name="count" placeholder="Укажите кол-во товара" required><br><br>
+        
+        <label for="photo">Фото товара:</label>
+        <input type="file" name="photo" accept="image/*" required>
+        
+        <label for="category">Категория товара:</label>
+        <input type="text" name="category" placeholder="Введите имя категории товара" required>
+        
+        <label for="sub_category">Подкатегория товара:</label>
+        <input type="text" name="sub_category" placeholder="Введите подкатегорию товара" required>
+        
+        <label for="title">Название товара:</label>
+        <input type="text" name="title" placeholder="Введите название товара" required>
+        
+        <label for="description">Описание товара:</label>
+        <input type="text" name="description" placeholder="Введите описание товара" required>
+        
+        <label for="price">Цена товара:</label>
+        <input type="text" name="price" placeholder="Укажите цену товара" required>
+        
+        <label for="count">Количество товара:</label>
+        <input type="text" name="count" placeholder="Укажите кол-во товара" required>
+        
         <button type="submit">Добавить</button>
-        <hr>
     </form>
 
     <script>

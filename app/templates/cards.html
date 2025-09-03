@@ -4,11 +4,118 @@
     <meta charset="UTF-8">
     <title>Постеры</title>
     <style>
+        body {
+            background: url('/static/images/rdr2.webp') no-repeat center center fixed;
+            background-size: cover;
+            margin: 0;
+            padding: 20px;
+            font-family: Arial, sans-serif;
+            color: white;
+            min-height: 100vh;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 20px;
+            background: rgba(0, 0, 0, 0.5);
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+
+        h1 {
+            color: white;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7);
+            margin: 0;
+        }
+
+        h2 {
+            text-align: center;
+            color: white;
+            margin: 20px 0;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 15px;
+        }
+
+        .nav-link {
+            padding: 8px 16px;
+            background: black;
+            color: white;
+            text-decoration: none;
+            border: 2px solid #333;
+            border-radius: 4px;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+
+        .nav-link:hover {
+            background: #222;
+            border-color: #555;
+        }
+
+        hr {
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            margin: 20px 0;
+        }
+
+        .products-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 30px;
+            margin: 30px 0;
+        }
+
+        .product-card {
+            background: rgba(0, 0, 0, 0.6);
+            padding: 20px;
+            border-radius: 10px;
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .product-card:hover {
+            background: rgba(30, 144, 255, 0.3); /* Голубая подсветка */
+            border-color: rgba(100, 180, 255, 0.5);
+            transform: translateY(-5px);
+        }
+
+        .product-image {
+            width: 100%;
+            height: 250px;
+            object-fit: cover;
+            border-radius: 8px;
+            margin-bottom: 15px;
+        }
+
+        .product-title {
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 10px;
+            color: white;
+        }
+
+        .product-info {
+            margin-bottom: 8px;
+            font-size: 14px;
+            color: #ccc;
+        }
+
+        .product-price {
+            font-size: 20px;
+            font-weight: bold;
+            color: #fff;
+            margin: 10px 0;
+        }
+
         .cart-controls {
             display: flex;
             align-items: center;
             gap: 10px;
-            margin: 10px 0;
+            margin: 15px 0;
         }
         
         .cart-controls form {
@@ -16,38 +123,84 @@
         }
         
         .cart-controls button {
-            padding: 5px 15px;
-            border: 1px solid #ccc;
-            background: #f0f0f0;
+            padding: 8px 15px;
+            background: black;
+            color: white;
+            border: 2px solid #333;
+            border-radius: 4px;
             cursor: pointer;
-            border-radius: 3px;
+            font-weight: bold;
         }
         
         .cart-controls button:hover {
-            background: #e0e0e0;
+            background: #222;
+            border-color: #555;
         }
         
         .cart-count {
             font-weight: bold;
             margin: 0 10px;
+            color: white;
         }
         
         .out-of-stock {
-            color: red;
+            color: #ff4444;
             font-weight: bold;
-            font-size: 18px;
+            font-size: 16px;
+            margin: 15px 0;
         }
-        
-        /* Стиль для флеш сообщения - белый текст в черной рамке */
+
+        .admin-controls {
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .admin-controls form {
+            margin: 10px 0;
+        }
+
+        .admin-controls button {
+            padding: 8px 16px;
+            background: black;
+            color: white;
+            border: 2px solid #333;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .admin-controls button:hover {
+            background: #222;
+            border-color: #555;
+        }
+
+        .admin-controls a {
+            color: #1e90ff;
+            text-decoration: none;
+        }
+
+        .admin-controls a:hover {
+            text-decoration: underline;
+        }
+
+        .empty-message {
+            text-align: center;
+            font-size: 24px;
+            color: #ccc;
+            margin: 50px 0;
+        }
+
+        /* Стиль для флеш сообщения */
         .flash-message {
             position: fixed;
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
-            color: white; /* Белый текст */
-            background-color: black; /* Черный фон */
+            color: white;
+            background-color: black;
             padding: 20px 40px;
-            border: 2px solid black; /* Черная рамка */
+            border: 2px solid black;
             border-radius: 10px;
             font-size: 18px;
             text-align: center;
@@ -73,102 +226,113 @@
         {% endif %}
     {% endwith %}
 
-    <h1>Revolver Marry Walker </h1>
-    <h2><b>Постеры</b></h2><br><br><br>
-     
-     
-    <a href="{{url_for('profile')}}">Мой профиль</a><br><br>
-     
-    <a href="{{url_for('all_category')}}">Товары</a> <br><br><br><br>
-    <a href="{{url_for('cart_user_card')}}">Корзина</a><br><br>
+    <div class="header">
+        <h1>Revolver Marry Walker</h1>
+        <div class="nav-links">
+            <a href="{{url_for('profile')}}" class="nav-link">Мой профиль</a>
+            <a href="{{url_for('all_category')}}" class="nav-link">Товары</a>
+            <a href="{{url_for('cart_user_card')}}" class="nav-link">Корзина</a>
+        </div>
+    </div>
+
     <hr>
 
+    <h2><b>Постеры</b></h2>
+
     {% if all_products %}
-        {% for tovars in all_products  | sort(attribute='date_add', reverse=True)  %}
-            <img class="photo" src="data:image/*;base64,{{ tovars.avatar }}" alt="Profile Picture" style="max-width: 300px; height: auto; display: block; margin-bottom: 20px;">
-            <b>Название - {{tovars.title}}</b> <br><br>
-            <b>Описание - {{tovars.description}}</b> <br><br>
-            <b>Дата добавления - {{tovars.date_add}}</b> <br><br>
-            <b>Цена - {{tovars.price}}р</b> <br><br>
-            <b>Количество на складе - {{tovars.count}}</b> <br><br>
-        
-            <!-- Проверка статуса товара -->
-            {% if tovars.status == "В наличии" %}
-                {% set ns = namespace(count_cart = 0) %}
-                {% for cart_tovar in cart %}
-                   {% if cart_tovar.product_id == tovars.id %}
-                        {% set ns.count_cart = cart_tovar.count %}
+        <div class="products-grid">
+            {% for tovars in all_products  | sort(attribute='date_add', reverse=True)  %}
+                <div class="product-card">
+                    <img class="product-image" src="data:image/*;base64,{{ tovars.avatar }}" alt="{{ tovars.title }}">
+                    
+                    <div class="product-title">{{ tovars.title }}</div>
+                    
+                    <div class="product-info">{{ tovars.description }}</div>
+                    
+                    <div class="product-info">Дата добавления: {{ tovars.date_add }}</div>
+                    
+                    <div class="product-price">{{ tovars.price }}р</div>
+                    
+                    <div class="product-info">Количество на складе: {{ tovars.count }}</div>
+                    
+                    <!-- Проверка статуса товара -->
+                    {% if tovars.status == "В наличии" %}
+                        {% set ns = namespace(count_cart = 0) %}
+                        {% for cart_tovar in cart %}
+                           {% if cart_tovar.product_id == tovars.id %}
+                                {% set ns.count_cart = cart_tovar.count %}
+                            {% endif %}
+                        {% endfor %}
+
+                        {% if ns.count_cart > 0 %}
+                        <div class="cart-controls">
+                            <form action="/add_product_cart" method="post">
+                                <input type="hidden" name="csrf_token" value="{{csrf_token()}}">
+                                <input type="hidden" name="_method" value="cards">
+                                <input type="hidden" name="product_id" value="{{tovars.id}}">
+                                <input type="hidden" name="action" value="decrease">
+                                <button type="submit">-</button>
+                            </form>
+
+                            <span class="cart-count">{{ ns.count_cart }}</span>
+
+                            {% if ns.count_cart < tovars.count %}
+                                <form action="/add_product_cart" method="post">
+                                    <input type="hidden" name="csrf_token" value="{{csrf_token()}}">
+                                    <input type="hidden" name="product_id" value="{{tovars.id}}">
+                                    <input type="hidden" name="_method" value="cards">
+                                    <input type="hidden" name="action" value="increase">
+                                    <button type="submit">+</button>
+                                </form>
+                            {% endif %}
+                        </div>
+
+                        {% else %}
+                            <form action="/add_product_cart" method="post">
+                                <input type="hidden" name="csrf_token" value="{{csrf_token()}}">
+                                <input type="hidden" name="_method" value="cards">
+                                <input type="hidden" name="product_id" value="{{tovars.id}}">
+                                <input type="hidden" name="action" value="add">
+                                <button type="submit">Добавить в корзину</button>
+                            </form>
+                        {% endif %}
+                    
+                    {% else %}
+                        <div class="out-of-stock">Товар закончился на складе</div>
+                        {% if current_user.role == "Creator" or current_user.role == "Admin" %}
+                            <div class="admin-controls">
+                                <a href="{{url_for('watch_cards_page')}}">Востановить?</a>
+                            </div>
+                        {% endif %}
                     {% endif %}
-                {% endfor %}
-
-                {% if ns.count_cart > 0 %}
-                <div class="cart-controls">
-                    <form action="/add_product_cart" method="post">
-                        <input type="hidden" name="csrf_token" value="{{csrf_token()}}">
-                        <input type="hidden" name="_method" value="cards">
-                        <input type="hidden" name="product_id" value="{{tovars.id}}">
-                        <input type="hidden" name="action" value="decrease">
-                        <button type="submit">-</button>
-                        </form>
-
-                    <span class="cart-count">Количество в корзине - {{ns.count_cart}}</span>
-
-                    {% if ns.count_cart < tovars.count %}
-                    <!-- Показываем + только если можно добавить -->
-                        <form action="/add_product_cart" method="post">
-                            <input type="hidden" name="csrf_token" value="{{csrf_token()}}">
-                            <input type="hidden" name="product_id" value="{{tovars.id}}">
-                            <input type="hidden" name="_method" value="cards">
-                            <input type="hidden" name="action" value="increase">
-                            <button type="submit">+</button>
-                        </form>
+                    
+                    <!-- Форма удаления постера -->
+                    {% if current_user.role == "Creator" or current_user.role == "Admin" %}
+                        <div class="admin-controls">
+                            <form action="/delete_card" method="post">
+                                <input type="hidden" name="csrf_token" value="{{csrf_token()}}">
+                                <input type="hidden" name="product_id" value="{{tovars.id}}">
+                                <button type="submit">Удалить постер</button>
+                            </form>
+                        </div>
                     {% endif %}
                 </div>
-
-                {% else %}
-                <!-- Товара нет в корзине -->
-                    <form action="/add_product_cart" method="post">
-                        <input type="hidden" name="csrf_token" value="{{csrf_token()}}">
-                        <input type="hidden" name="_method" value="cards">
-                        <input type="hidden" name="product_id" value="{{tovars.id}}">
-                        <input type="hidden" name="action" value="add">
-                        <button type="submit">Добавить в корзину</button>
-                    </form>
-                {% endif %}
-            
-            {% else %}
-                <!-- Товар не в наличии -->
-                <div class="out-of-stock">Товар закончился на складе</div><br><br>
-                {% if current_user.role == "Creator" or current_user.role == "Admin" %}
-                    <a href="{{url_for('watch_cards_page')}}">Востановить?</a><br><br>
-                {% endif %}
-            {% endif %}
-            
-            <!-- Форма удаления постера -->
-            {% if current_user.role == "Creator" or current_user.role == "Admin" %}
-                <form action="/delete_card" method="post">
-                    <input type="hidden" name="csrf_token" value="{{csrf_token()}}">
-                    <input type="hidden" name="product_id" value="{{tovars.id}}">
-                    <button type="submit">Удалить постер</button>
-                </form>
-            {% endif %}
-            
-            <hr>
-        {% endfor %}
+            {% endfor %}
+        </div>
     {% else %}
-        <b>Постеров пока что нет 😔 </b>
+        <div class="empty-message">Постеров пока что нет 😔</div>
     {% endif %}
 
     <!-- Скрипт для автоматического скрытия флеш сообщения -->
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            const flashMessage = document.querySelector('.flash-message');
-            if (flashMessage) {
+            const flashMessages = document.querySelectorAll('.flash-message');
+            flashMessages.forEach((message, index) => {
                 setTimeout(() => {
-                    flashMessage.style.display = 'none';
-                    flashMessage.remove()
-                }, 3000); // 3 секунды
-            }
+                    message.style.display = 'none';
+                    message.remove();
+                }, 3000 + (index * 100));
+            });
         });
     </script>
 </body>

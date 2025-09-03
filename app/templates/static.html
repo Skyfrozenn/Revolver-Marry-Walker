@@ -4,67 +4,164 @@
     <meta charset="UTF-8">
     <title>Статистика</title>
     <style>
-        .stat-card {
-            border: 2px solid #ccc;
+        body {
+            background: url('/static/images/rdr2.webp') no-repeat center center fixed;
+            background-size: cover;
+            margin: 0;
             padding: 20px;
-            margin: 15px 0;
-            border-radius: 10px;
-            background-color: #f9f9f9;
+            font-family: Arial, sans-serif;
+            color: white;
+            min-height: 100vh;
         }
-        .stat-value {
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 20px;
+            background: rgba(0, 0, 0, 0.5);
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+
+        h1 {
+            color: white;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7);
+            margin: 0;
+        }
+
+        .section-title {
+            text-align: center;
             font-size: 24px;
             font-weight: bold;
-            color: #2c3e50;
+            color: white;
+            margin: 20px 0;
+        }
+
+        .nav-link {
+            padding: 8px 16px;
+            background: black;
+            color: white;
+            text-decoration: none;
+            border: 2px solid #333;
+            border-radius: 4px;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+
+        .nav-link:hover {
+            background: #222;
+            border-color: #555;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 25px;
+            margin: 30px 0;
+        }
+
+        .stat-card {
+            background: rgba(0, 0, 0, 0.6);
+            padding: 25px;
+            border-radius: 12px;
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .stat-card:hover {
+            background: rgba(30, 144, 255, 0.3);
+            border-color: rgba(100, 180, 255, 0.5);
+            transform: translateY(-5px);
+        }
+
+        .stat-card h3 {
+            color: white;
+            margin-bottom: 15px;
+            font-size: 18px;
+            text-align: center;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+            padding-bottom: 10px;
+        }
+
+        .stat-value {
+            font-size: 28px;
+            font-weight: bold;
+            color: #fff;
+            text-align: center;
+            margin: 10px 0;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+        }
+
+        .stat-info {
+            color: #ccc;
+            text-align: center;
+            margin: 8px 0;
+            font-size: 16px;
+        }
+
+        .no-data {
+            text-align: center;
+            color: #888;
+            font-style: italic;
+            margin: 15px 0;
         }
     </style>
 </head>
 <body>
-    <h1>Revolver Marry Walker</h1>
-    <b>Статистика</b>  <br><br><br>
-    
-    <a href="{{url_for('profile')}}">Вернуться в профиль</a><br><br>
-
-    <!-- 1. Самый прибыльный товар -->
-    <div class="stat-card">
-        <h3>Самый прибыльный товар:</h3>
-        {% if max_product %}
-            {% set product, revenue = max_product %}
-            <p class="stat-value">{{ product.title }}</p>
-            <p>Выручка: {{ revenue }}р</p>
-        {% else %}
-            <p>Нет данных</p>
-        {% endif %}
+    <div class="header">
+        <h1>Revolver Marry Walker</h1>
+        <a href="{{url_for('profile')}}" class="nav-link">Вернуться в профиль</a>
     </div>
 
-    <!-- 2. Самый частый покупатель -->
-    <div class="stat-card">
-        <h3>Самый частый покупатель:</h3>
-        {% if max_user %}
-            {% set user, purchase_count = max_user %}
-            <p class="stat-value">{{ user.name }}</p>
-            <p>Количество покупок: {{ purchase_count }}</p>
-        {% else %}
-            <p>Нет данных</p>
-        {% endif %}
-    </div>
+    <div class="section-title">Статистика</div>
 
-    <!-- 3. Общая статистика -->
-    <div class="stat-card">
-        <h3>Общая статистика:</h3>
-        <p class="stat-value">Всего продаж: {{ total_count }} шт.</p>
-        <p class="stat-value">Общая выручка: {{ total_revenue }}р</p>
-    </div>
+    <div class="stats-grid">
+        <!-- 1. Самый прибыльный товар -->
+        <div class="stat-card">
+            <h3>Самый прибыльный товар</h3>
+            {% if max_product %}
+                {% set product, revenue = max_product %}
+                <div class="stat-value">{{ product.title }}</div>
+                <div class="stat-info">Выручка: {{ revenue }}р</div>
+            {% else %}
+                <div class="no-data">Нет данных</div>
+            {% endif %}
+        </div>
 
-    <!-- 4. Самая популярная категория -->
-    <div class="stat-card">
-        <h3>Самая популярная категория:</h3>
-        {% if pop_category %}
-            {% set sub_name, cat_name, purchases = pop_category %}
-            <p class="stat-value">{{ cat_name }} / {{ sub_name }}</p>
-            <p>Количество покупок: {{ purchases }}</p>
-        {% else %}
-            <p>Нет данных</p>
-        {% endif %}
+        <!-- 2. Самый частый покупатель -->
+        <div class="stat-card">
+            <h3>Самый частый покупатель</h3>
+            {% if max_user %}
+                {% set user, purchase_count = max_user %}
+                <div class="stat-value">{{ user.name }}</div>
+                <div class="stat-info">Количество покупок: {{ purchase_count }}</div>
+            {% else %}
+                <div class="no-data">Нет данных</div>
+            {% endif %}
+        </div>
+
+        <!-- 3. Общая статистика -->
+        <div class="stat-card">
+            <h3>Общая статистика</h3>
+            <div class="stat-value">{{ total_count }} шт.</div>
+            <div class="stat-info">Всего продаж</div>
+            <div class="stat-value">{{ total_revenue }}р</div>
+            <div class="stat-info">Общая выручка</div>
+        </div>
+
+        <!-- 4. Самая популярная категория -->
+        <div class="stat-card">
+            <h3>Самая популярная категория</h3>
+            {% if pop_category %}
+                {% set sub_name, cat_name, purchases = pop_category %}
+                <div class="stat-value">{{ cat_name }}</div>
+                <div class="stat-info">Подкатегория: {{ sub_name }}</div>
+                <div class="stat-info">Покупок: {{ purchases }}</div>
+            {% else %}
+                <div class="no-data">Нет данных</div>
+            {% endif %}
+        </div>
     </div>
 </body>
 </html>

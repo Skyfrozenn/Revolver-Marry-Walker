@@ -4,16 +4,111 @@
     <meta charset="UTF-8">
     <title>категории</title>
     <style>
-        /* Стиль для флеш сообщения - белый текст в черной рамке */
+        body {
+            background: url('/static/images/rdr2.webp') no-repeat center center fixed;
+            background-size: cover;
+            margin: 0;
+            padding: 20px;
+            font-family: Arial, sans-serif;
+            color: white;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
+            max-width: 1200px;
+            padding: 10px 20px;
+            background: rgba(0, 0, 0, 0.5);
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+
+        h1 {
+            color: white;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7);
+            margin: 0;
+        }
+
+        h2 {
+            text-align: center;
+            color: white;
+            margin: 20px 0;
+        }
+
+        .nav-link {
+            padding: 8px 16px;
+            background: black;
+            color: white;
+            text-decoration: none;
+            border: 2px solid #333;
+            border-radius: 4px;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+
+        .nav-link:hover {
+            background: #222;
+            border-color: #555;
+        }
+
+        hr {
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            margin: 20px 0;
+            width: 100%;
+            max-width: 1200px;
+        }
+
+        .categories-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 15px;
+            margin: 30px 0;
+        }
+
+        .category-link {
+            padding: 15px 30px;
+            background: rgba(0, 0, 0, 0.6);
+            color: white;
+            text-decoration: none;
+            border: 2px solid #333;
+            border-radius: 6px;
+            font-size: 18px;
+            font-weight: bold;
+            text-align: center;
+            min-width: 200px;
+            transition: all 0.3s ease;
+        }
+
+        .category-link:hover {
+            background: rgba(30, 144, 255, 0.3);
+            border-color: rgba(100, 180, 255, 0.5);
+            transform: translateY(-2px);
+        }
+
+        .empty-message {
+            text-align: center;
+            font-size: 24px;
+            color: #ccc;
+            margin: 50px 0;
+        }
+
+        /* Стиль для флеш сообщения */
         .flash-message {
             position: fixed;
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
-            color: white; /* Белый текст */
-            background-color: black; /* Черный фон */
+            color: white;
+            background-color: black;
             padding: 20px 40px;
-            border: 2px solid black; /* Черная рамка */
+            border: 2px solid black;
             border-radius: 10px;
             font-size: 18px;
             text-align: center;
@@ -40,32 +135,37 @@
         {% endif %}
     {% endwith %}
 
-    <h1>Revolver Marry Walker</h1><br>
-    <h2>категории</h2><br>
-    <a href="{{url_for('profile')}}">Вернуться в профиль</a><br>
-    
-     
+    <div class="header">
+        <h1>Revolver Marry Walker</h1>
+        <a href="{{url_for('profile')}}" class="nav-link">Вернуться в профиль</a>
+    </div>
+
+    <h2>Категории</h2>
+
     <hr>
 
-    {% if category %}
-        {% for item_cat in category  %}
-            <a href="{{url_for('view_sub_category', category_id = item_cat.id)}}">{{item_cat.title}}</a><br>
-        {% endfor %}
-    
-    {% else %}
-        <b>Товаров еще нет 😔 </b>
-    {% endif %}
+    <div class="categories-container">
+        {% if category %}
+            {% for item_cat in category %}
+                <a href="{{url_for('view_sub_category', category_id = item_cat.id)}}" class="category-link">
+                    {{item_cat.title}}
+                </a>
+            {% endfor %}
+        {% else %}
+            <div class="empty-message">Товаров еще нет 😔</div>
+        {% endif %}
+    </div>
 
     <!-- Скрипт для автоматического скрытия флеш сообщения -->
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            const flashMessage = document.querySelector('.flash-message');
-            if (flashMessage) {
+            const flashMessages = document.querySelectorAll('.flash-message');
+            flashMessages.forEach((message, index) => {
                 setTimeout(() => {
-                    flashMessage.style.display = 'none';
-                    flashMessage.remove()
-                }, 5000); // 5 секунд
-            }
+                    message.style.display = 'none';
+                    message.remove();
+                }, 5000 + (index * 100));
+            });
         });
     </script>
 </body>

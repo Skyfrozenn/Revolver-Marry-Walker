@@ -4,11 +4,22 @@
     <meta charset="UTF-8">
     <title>Профиль</title>
     <style>
+        body {
+            background: url('/static/images/rdr2.webp') no-repeat center center fixed;
+            background-size: cover;
+            margin: 0;
+            padding: 20px;
+            font-family: Arial, sans-serif;
+            color: white;
+            min-height: 100vh;
+        }
+
+        /* Существующие стили НЕ ТРОГАЕМ */
         .avatar {
-            width: 250px;         /* Нормальный размер как в соцсетях */
-            height: 250px;        /* Квадратная форма */
-            object-fit: cover;    /* Чтобы изображение заполняло круг */
-            box-shadow: 0 0 10px rgba(0,0,0,0.3); /* Легкая тень */
+            width: 250px;
+            height: 250px;
+            object-fit: cover;
+            box-shadow: 0 0 10px rgba(0,0,0,0.3);
             display: block;
         }
         
@@ -21,16 +32,15 @@
             display: block;
         }
         
-        /* Стиль для флеш сообщения - белый текст в черной рамке */
         .flash-message {
             position: fixed;
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
-            color: white; /* Белый текст */
-            background-color: black; /* Черный фон */
+            color: white;
+            background-color: black;
             padding: 20px 40px;
-            border: 2px solid black; /* Черная рамка */
+            border: 2px solid black;
             border-radius: 10px;
             font-size: 18px;
             text-align: center;
@@ -44,6 +54,146 @@
             90% { opacity: 1; }
             100% { opacity: 0; }
         }
+
+        /* Новые стили */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 20px;
+            background: rgba(0, 0, 0, 0.5);
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+
+        h1 {
+            color: white;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7);
+            margin: 0;
+        }
+
+        .header-buttons {
+            display: flex;
+            gap: 15px;
+        }
+
+        .header-button {
+            padding: 8px 16px;
+            background: black;
+            color: white;
+            text-decoration: none;
+            border: 2px solid #333;
+            border-radius: 4px;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+
+        .header-button:hover {
+            background: #222;
+            border-color: #555;
+        }
+
+        .profile-main {
+            display: flex;
+            max-width: 1000px;
+            margin: 0 auto;
+            gap: 30px;
+        }
+
+        .profile-sidebar {
+            width: 250px;
+            background: rgba(0, 0, 0, 0.4);
+            padding: 20px;
+            border-radius: 10px;
+            border: 2px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .profile-content {
+            flex: 1;
+            background: rgba(0, 0, 0, 0.4);
+            padding: 25px;
+            border-radius: 10px;
+            border: 2px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .nav-links {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .nav-link {
+            display: block;
+            padding: 12px 15px;
+            background: black;
+            color: white;
+            text-decoration: none;
+            border: 2px solid #333;
+            border-radius: 5px;
+            text-align: left;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+
+        .nav-link:hover {
+            background: #222;
+            border-color: #555;
+        }
+
+        hr {
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            margin: 20px 0;
+        }
+
+        .avatar-section {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .upload-form {
+            margin-top: 15px;
+        }
+
+        input[type="file"] {
+            background: black;
+            color: white;
+            padding: 8px;
+            border: 2px solid #333;
+            border-radius: 4px;
+            margin-right: 10px;
+            width: 180px;
+        }
+
+        button {
+            background: black;
+            color: white;
+            border: 2px solid #333;
+            border-radius: 4px;
+            padding: 8px 16px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        button:hover {
+            background: #222;
+            border-color: #555;
+        }
+
+        .profile-info {
+            margin-top: 20px;
+        }
+
+        .user-stats {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 15px;
+            border-radius: 6px;
+            margin-top: 15px;
+        }
+
+        .user-stats b {
+            color: #fff;
+            font-size: 18px;
+        }
     </style>
 </head>
 <body>
@@ -56,69 +206,85 @@
         {% endif %}
     {% endwith %}
 
-    <h1>Revolver Marry Walker</h1><br>
-    <a href="{{url_for('home_page')}}">Выйти</a><br><br>
-    <a href="{{url_for('watch_cards')}}">Постеры</a><br><br>
-    <a href="{{url_for('all_category')}}">Товары</a> <br><br>
-    
-    {% if current_user.role == "Creator" or current_user.role == "Admin"  %}
-        <a href="{{url_for('watch_cards_page')}}">Добавить товар</a>
-    {% endif %}
-    <br><br>
-    <a href="{{url_for('cart_user_card')}}">Корзина</a><br><br>
-    {% if current_user.role == "Creator" or current_user.role == "Admin"  %}
-        <a href="{{url_for('state')}}">Статистика</a>
-    {% endif %}
-    <br><br><br>
-    <a href="{{url_for('purchase_history')}}">История покупок</a> <br><br>
-
-    {% if current_user.role == "Creator" or current_user.role == "Admin"  %}
-        <a href="{{url_for('update_role_user')}}">Назначить админов</a>
-    {% endif %}
-    
+    <div class="header">
+        <h1>Revolver Marry Walker</h1>
+        <div class="header-buttons">
+            <a href="{{url_for('home_page')}}" class="header-button">Выйти</a>
+            {% if current_user.role == "Creator" or current_user.role == "Admin" %}
+                <a href="{{url_for('state')}}" class="header-button">Статистика</a>
+            {% endif %}
+        </div>
+    </div>
 
     <hr>
-    
-    {% if user.photo_uploads %}
-         <img class="avatar" src="data:image/*;base64,{{ user.photo_uploads }}" alt="Profile Picture">
-    {% else %}
-        <img class="default-avatar" 
-             src="https://avatars.mds.yandex.net/i?id=503c6934742d3ca332d383687581e5b3_l-5668549-images-thumbs&n=13" 
-             alt="Аватарка по умолчанию">
-    {% endif %}
-    <br>
-    <form action="/uploads_photo" method="post" enctype="multipart/form-data">
-        <input type="hidden" name="csrf_token" value = "{{ csrf_token()}}" >
-        <input type="file" name="photo" accept="image/*" required>
-        <button type="submit">Изменить фото</button>
-    </form>
-    <hr>
 
-    <b>{{user.name}}</b> <b>({{user.role}})</b><br><br>
-    Дата регистрации : {{user.join}} <br><br>
-    {% if count is not none %}
-        Количество купленных товаров : {{count}}
-    {% else %}
-        Количество купленных товаров : 0
-    {% endif %}
-    
+    <div class="profile-main">
+        <!-- Боковая панель с навигацией как в VK -->
+        <div class="profile-sidebar">
+            <div class="nav-links">
+                <a href="{{url_for('watch_cards')}}" class="nav-link">Постеры</a>
+                <a href="{{url_for('all_category')}}" class="nav-link">Товары</a>
+                
+                {% if current_user.role == "Creator" or current_user.role == "Admin" %}
+                    <a href="{{url_for('watch_cards_page')}}" class="nav-link">Добавить товар</a>
+                {% endif %}
+                
+                <a href="{{url_for('cart_user_card')}}" class="nav-link">Корзина</a>
+                
+                <a href="{{url_for('purchase_history')}}" class="nav-link">История покупок</a>
+                
+                {% if current_user.role == "Creator" or current_user.role == "Admin" %}
+                    <a href="{{url_for('update_role_user')}}" class="nav-link">Назначить админов</a>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Основной контент профиля -->
+        <div class="profile-content">
+            <div class="avatar-section">
+                {% if user.photo_uploads %}
+                    <img class="avatar" src="data:image/*;base64,{{ user.photo_uploads }}" alt="Profile Picture">
+                {% else %}
+                    <img class="default-avatar" 
+                         src="https://avatars.mds.yandex.net/i?id=503c6934742d3ca332d383687581e5b3_l-5668549-images-thumbs&n=13" 
+                         alt="Аватарка по умолчанию">
+                {% endif %}
+                
+                <form action="/uploads_photo" method="post" enctype="multipart/form-data" class="upload-form">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token()}}">
+                    <input type="file" name="photo" accept="image/*" required>
+                    <button type="submit">Изменить фото</button>
+                </form>
+            </div>
+
+            <hr>
+
+            <div class="profile-info">
+                <b>{{user.name}}</b> <b>({{user.role}})</b><br><br>
+                Дата регистрации : {{user.join}} <br><br>
+                
+                <div class="user-stats">
+                    {% if count is not none %}
+                        Количество купленных товаров : {{count}}
+                    {% else %}
+                        Количество купленных товаров : 0
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Скрипт для автоматического скрытия флеш сообщения -->
     <script>
-         <!-- Скрипт для автоматического скрытия флеш сообщений -->
-     
-             document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('DOMContentLoaded', function() {
             const flashMessages = document.querySelectorAll('.flash-message');
             flashMessages.forEach((message, index) => {
-                // Добавляем задержку для каждого сообщения, чтобы они не накладывались
                 setTimeout(() => {
                     message.style.display = 'none';
                     message.remove()
                 }, 3000 + (index * 100));
-                 // 3 секунды + небольшая задержка между сообщениями
             });
         });
     </script>
 </body>
 </html>
-     
- 

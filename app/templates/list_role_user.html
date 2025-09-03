@@ -6,76 +6,189 @@
     <title>Revolver Marry Walker - Список пользователей</title>
     <style>
         body {
+            background: url('/static/images/rdr2.webp') no-repeat center center fixed;
+            background-size: cover;
+            margin: 0;
+            padding: 20px;
             font-family: Arial, sans-serif;
-            margin: 20px;
-            background-color: #f4f4f4;
+            color: white;
+            min-height: 100vh;
         }
-        h1 {
-            color: #333;
-            text-align: center;
+        
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 20px;
+            background: rgba(0, 0, 0, 0.5);
+            border-radius: 8px;
             margin-bottom: 20px;
         }
-        hr {
-            border: 1px solid #ddd;
-            margin: 20px 0;
+
+        h1 {
+            color: white;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7);
+            margin: 0;
+            text-align: center;
         }
-        .user-list {
-            background: white;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+
+        .nav-links {
+            display: flex;
+            gap: 15px;
         }
-        .user-item {
-            padding: 10px;
-            border-bottom: 1px solid #eee;
-        }
-        .user-item:last-child {
-            border-bottom: none;
-        }
-        .back-button {
-            display: inline-block;
-            padding: 10px 20px;
-            background-color: #007bff;
+
+        .nav-link {
+            padding: 8px 16px;
+            background: black;
             color: white;
             text-decoration: none;
+            border: 2px solid #333;
             border-radius: 4px;
-            margin-top: 20px;
+            font-weight: bold;
+            transition: all 0.3s ease;
         }
+
+        .nav-link:hover {
+            background: #222;
+            border-color: #555;
+        }
+
+        .back-button {
+            padding: 10px 20px;
+            background: black;
+            color: white;
+            text-decoration: none;
+            border: 2px solid #333;
+            border-radius: 4px;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+
         .back-button:hover {
-            background-color: #0056b3;
+            background: #222;
+            border-color: #555;
+        }
+
+        hr {
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            margin: 20px 0;
+        }
+
+        .user-list {
+            background: rgba(0, 0, 0, 0.6);
+            padding: 30px;
+            border-radius: 10px;
+            border: 2px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .user-list h2 {
+            text-align: center;
+            color: white;
+            margin-bottom: 20px;
+        }
+
+        .users-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+        }
+
+        .user-item {
+            background: rgba(0, 0, 0, 0.4);
+            padding: 20px;
+            border-radius: 8px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .user-item:hover {
+            background: rgba(30, 144, 255, 0.3);
+            border-color: rgba(100, 180, 255, 0.5);
+            transform: translateY(-2px);
+        }
+
+        .user-item strong {
+            color: white;
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        .user-item span {
+            color: #ccc;
+            margin-bottom: 10px;
+            display: block;
+        }
+
+        .admin-form {
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .admin-form button {
+            padding: 10px 20px;
+            background: black;
+            color: white;
+            border: 2px solid #333;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+            width: 100%;
+        }
+
+        .admin-form button:hover {
+            background: #222;
+            border-color: #555;
+        }
+
+        .empty-message {
+            text-align: center;
+            font-size: 18px;
+            color: #ccc;
+            margin: 20px 0;
         }
     </style>
 </head>
 <body>
-    <h1>Revolver Marry Walker</h1>
-    <a href="{{url_for('update_role_admin')}}">Список Админов</a><br><br>
-    <a href="{{ url_for('profile') }}" class="back-button">Вернуться в профиль</a>
+    <div class="header">
+        <h1>Revolver Marry Walker</h1>
+        <div class="nav-links">
+            <a href="{{url_for('update_role_admin')}}" class="nav-link">Список Админов</a>
+            <a href="{{ url_for('profile') }}" class="back-button">Вернуться в профиль</a>
+        </div>
+    </div>
+
     <hr>
     
     <div class="user-list">
         <h2>Список пользователей с ролью "user"</h2>
         
         {% if role_user_list %}
-            {% for user in role_user_list %}
-                <div class="user-item">
-                    <strong>ID:</strong> {{ user.id }}<br>
-                    <strong>Имя пользователя:</strong> {{ user.name }}<br>
-                    <strong>Роль:</strong> {{ user.role }} <br>
-                    <form action="/add_new_admin" method="post">
-                        <input type="hidden" name="csrf_token" value="{{csrf_token()}}">
-                        <input type="hidden" name="user_id" value="{{user.id}}">
-                        <br>
-                        <button type="submit">Назначить администратором</button><br>
-
-                    </form>
-                    
-                </div>
-            {% endfor %}
+            <div class="users-grid">
+                {% for user in role_user_list %}
+                    <div class="user-item">
+                        <strong>ID:</strong>
+                        <span>{{ user.id }}</span>
+                        
+                        <strong>Имя пользователя:</strong>
+                        <span>{{ user.name }}</span>
+                        
+                        <strong>Роль:</strong>
+                        <span>{{ user.role }}</span>
+                        
+                        <div class="admin-form">
+                            <form action="/add_new_admin" method="post">
+                                <input type="hidden" name="csrf_token" value="{{csrf_token()}}">
+                                <input type="hidden" name="user_id" value="{{user.id}}">
+                                <button type="submit">Назначить администратором</button>
+                            </form>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
         {% else %}
-            <p>Пользователей с ролью "user" не найдено</p>
+            <div class="empty-message">Пользователей с ролью "user" не найдено</div>
         {% endif %}
     </div>
-
-    
 </body>
 </html>

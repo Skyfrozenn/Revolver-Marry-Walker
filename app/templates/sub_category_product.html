@@ -3,35 +3,136 @@
 <head>
     <meta charset="UTF-8">
     <title>Подкатегории</title>
+    <style>
+        body {
+            background: url('/static/images/rdr2.webp') no-repeat center center fixed;
+            background-size: cover;
+            margin: 0;
+            padding: 20px;
+            font-family: Arial, sans-serif;
+            color: white;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
+            max-width: 1200px;
+            padding: 10px 20px;
+            background: rgba(0, 0, 0, 0.5);
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+
+        h1 {
+            color: white;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7);
+            margin: 0;
+        }
+
+        h2 {
+            text-align: center;
+            color: white;
+            margin: 20px 0;
+        }
+
+        .nav-link {
+            padding: 8px 16px;
+            background: black;
+            color: white;
+            text-decoration: none;
+            border: 2px solid #333;
+            border-radius: 4px;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+
+        .nav-link:hover {
+            background: #222;
+            border-color: #555;
+        }
+
+        hr {
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            margin: 20px 0;
+            width: 100%;
+            max-width: 1200px;
+        }
+
+        .category-info {
+            text-align: center;
+            font-size: 20px;
+            font-weight: bold;
+            margin: 20px 0;
+            color: white;
+        }
+
+        .subcategories-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 15px;
+            margin: 30px 0;
+        }
+
+        .subcategory-link {
+            padding: 15px 30px;
+            background: rgba(0, 0, 0, 0.6);
+            color: white;
+            text-decoration: none;
+            border: 2px solid #333;
+            border-radius: 6px;
+            font-size: 18px;
+            font-weight: bold;
+            text-align: center;
+            min-width: 200px;
+            transition: all 0.3s ease;
+        }
+
+        .subcategory-link:hover {
+            background: rgba(30, 144, 255, 0.3);
+            border-color: rgba(100, 180, 255, 0.5);
+            transform: translateY(-2px);
+        }
+
+        .empty-message {
+            text-align: center;
+            font-size: 24px;
+            color: #ccc;
+            margin: 50px 0;
+        }
+    </style>
 </head>
 
- 
-    <h1>Revolver Marry Walker</h1><br>
-    <h2>Подкатегории</h2><br><br>
-    <a href="{{url_for('profile')}}">Вернуться в профиль</a><br><br>
-    
-     
-     
+<body>
+    <div class="header">
+        <h1>Revolver Marry Walker</h1>
+        <a href="{{url_for('profile')}}" class="nav-link">Вернуться в профиль</a>
+    </div>
+
+    <h2>Подкатегории</h2>
+
     <hr>
 
-    <body>
-        {% if sub_category %}
-            <b>Категория - {{sub_category[0].parent_categories.title}}</b><br><br>
+    {% if sub_category %}
+        <div class="category-info">
+            Категория - {{sub_category[0].parent_categories.title}}
+        </div>
 
-            {% for sub_cat in sub_category  %}
-                <a href="{{ url_for('wath_all_products', page=1, sub_category_id=sub_cat.id) }}">{{sub_cat.title}}</a><br><br>
+        <div class="subcategories-container">
+            {% for sub_cat in sub_category %}
+                <a href="{{ url_for('wath_all_products', page=1, sub_category_id=sub_cat.id) }}" class="subcategory-link">
+                    {{sub_cat.title}}
+                </a>
             {% endfor %}
-         
-        {% else %}
-            <p>😔 Подкатегорий нет в категории</p>
-        {% endif %}
-            
-        
-    </body>
-
-
-
-
-
-
+        </div>
+    {% else %}
+        <div class="empty-message">😔 Подкатегорий нет в категории</div>
+    {% endif %}
+</body>
 </html>

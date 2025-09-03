@@ -3,35 +3,155 @@
 <head>
     <meta charset="UTF-8">
     <title>Добавление постеров</title>
+    <style>
+        body {
+            background: url('/static/images/rdr2.webp') no-repeat center center fixed;
+            background-size: cover;
+            margin: 0;
+            padding: 20px;
+            font-family: Arial, sans-serif;
+            color: white;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
+            max-width: 800px;
+            padding: 10px 20px;
+            background: rgba(0, 0, 0, 0.5);
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+
+        h1 {
+            color: white;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7);
+            margin: 0;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 15px;
+        }
+
+        .nav-link {
+            padding: 8px 16px;
+            background: black;
+            color: white;
+            text-decoration: none;
+            border: 2px solid #333;
+            border-radius: 4px;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+
+        .nav-link:hover {
+            background: #222;
+            border-color: #555;
+        }
+
+        hr {
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            margin: 20px 0;
+            width: 100%;
+            max-width: 800px;
+        }
+
+        form {
+            background: rgba(0, 0, 0, 0.6);
+            padding: 30px;
+            border-radius: 10px;
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            width: 100%;
+            max-width: 500px;
+        }
+
+        input[type="file"],
+        input[type="text"] {
+            width: 100%;
+            padding: 12px;
+            margin: 10px 0;
+            background: black;
+            border: 2px solid #333;
+            border-radius: 5px;
+            color: white;
+            font-size: 16px;
+            box-sizing: border-box;
+        }
+
+        input[type="file"]::placeholder,
+        input[type="text"]::placeholder {
+            color: #888;
+        }
+
+        button[type="submit"] {
+            width: 100%;
+            padding: 15px;
+            background: black;
+            color: white;
+            border: 2px solid #333;
+            border-radius: 5px;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 15px;
+            transition: all 0.3s ease;
+        }
+
+        button[type="submit"]:hover {
+            background: #222;
+            border-color: #555;
+            transform: translateY(-2px);
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: white;
+        }
+    </style>
 </head>
 
-<h1>Revolver Marry Walker</h1>
-<a href="{{url_for('profile')}}">Вернуться в профиль</a><br><br>
-<a href="{{url_for('add_page_products')}}">Добавить другие товары</a>
-<hr>
-
-
 <body>
+    <div class="header">
+        <h1>Revolver Marry Walker</h1>
+        <div class="nav-links">
+            <a href="{{url_for('profile')}}" class="nav-link">Вернуться в профиль</a>
+            <a href="{{url_for('add_page_products')}}" class="nav-link">Добавить другие товары</a>
+        </div>
+    </div>
+
+    <hr>
+
     <form action="/add_cards" method="post" enctype="multipart/form-data">
-         
         <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-        <input type="file" name="photo" accept ="image/*" required ><br>
-        <input type="text" name="title" placeholder="Введите название постера"  required><br>
-        <input type="text" name="description" placeholder="Введите описание товара" required><br>
-        <input type="text" name="price" placeholder="Укаите цену товара" required><br>
-        <input type="text" name="count" placeholder="Укажите кол-во товара" required><br>
+        
+        <label for="photo">Фото постера:</label>
+        <input type="file" name="photo" accept="image/*" required>
+        
+        <label for="title">Название постера:</label>
+        <input type="text" name="title" placeholder="Введите название постера" required>
+        
+        <label for="description">Описание товара:</label>
+        <input type="text" name="description" placeholder="Введите описание товара" required>
+        
+        <label for="price">Цена товара:</label>
+        <input type="text" name="price" placeholder="Укажите цену товара" required>
+        
+        <label for="count">Количество товара:</label>
+        <input type="text" name="count" placeholder="Укажите кол-во товара" required>
+        
         <button type="submit">Добавить</button>
-
-
     </form>
 </body>
-
-
-
-
-
 </html>
-
 
 
 <!--title = title,

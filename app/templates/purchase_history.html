@@ -4,53 +4,207 @@
     <meta charset="UTF-8">
     <title>История покупок</title>
     <style>
-        .product-card {
-            border: 1px solid #ccc;
+        body {
+            background: url('/static/images/rdr2.webp') no-repeat center center fixed;
+            background-size: cover;
+            margin: 0;
             padding: 20px;
-            margin: 10px 0;
-            border-radius: 5px;
+            font-family: Arial, sans-serif;
+            color: white;
+            min-height: 100vh;
         }
-        .product-card img {
-            max-width: 200px;
-            height: auto;
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 20px;
+            background: rgba(0, 0, 0, 0.5);
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+
+        h1 {
+            color: white;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7);
+            margin: 0;
+        }
+
+        h2 {
+            text-align: center;
+            color: white;
+            margin: 20px 0;
+        }
+
+        .warning {
+            background: rgba(255, 68, 68, 0.3);
+            padding: 15px;
+            border-radius: 8px;
+            border: 2px solid rgba(255, 0, 0, 0.5);
+            margin: 20px auto;
+            max-width: 800px;
+            text-align: center;
+            font-weight: bold;
+        }
+
+        .nav-link {
+            padding: 8px 16px;
+            background: black;
+            color: white;
+            text-decoration: none;
+            border: 2px solid #333;
+            border-radius: 4px;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+
+        .nav-link:hover {
+            background: #222;
+            border-color: #555;
+        }
+
+        .clear-form {
+            margin: 20px 0;
+            text-align: center;
+        }
+
+        .clear-form button {
+            padding: 12px 25px;
+            background: black;
+            color: white;
+            border: 2px solid #333;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 16px;
+        }
+
+        .clear-form button:hover {
+            background: #222;
+            border-color: #555;
+        }
+
+        hr {
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            margin: 20px 0;
+        }
+
+        .purchases-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 30px;
+            margin: 30px 0;
+        }
+
+        .purchase-item {
+            background: rgba(0, 0, 0, 0.6);
+            padding: 20px;
+            border-radius: 10px;
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .purchase-item:hover {
+            background: rgba(30, 144, 255, 0.3);
+            border-color: rgba(100, 180, 255, 0.5);
+            transform: translateY(-5px);
+        }
+
+        .purchase-item img {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+            border-radius: 8px;
+            margin-bottom: 15px;
+        }
+
+        .purchase-item p {
+            margin: 8px 0;
+            font-size: 14px;
+            color: #ccc;
+        }
+
+        .purchase-item .title {
+            font-size: 18px;
+            font-weight: bold;
+            color: white;
+            margin-bottom: 10px;
+        }
+
+        .delete-form {
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .delete-form button {
+            padding: 8px 16px;
+            background: black;
+            color: white;
+            border: 2px solid #333;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .delete-form button:hover {
+            background: #222;
+            border-color: #555;
+        }
+
+        .empty-message {
+            text-align: center;
+            font-size: 24px;
+            color: #ccc;
+            margin: 50px 0;
         }
     </style>
 </head>
 <body>
-    <h1>Revolver Marry Walker</h1>
-    <h2>История покупок</h2><br><br>
-    <b>При уменьшения количества купленного товара или при очищение истории покупок,количество купленных товаров в профиле сбрасывается!</b>
-    <br><br>
-    
-    <a href="{{url_for('profile')}}">Вернуться в профиль</a><br><br>
-    <form action="/delete_history_product" method="post">
-        <input type="hidden" name="csrf_token" value="{{csrf_token()}}">
-        <input type="hidden" name="method" value="all_delete">
-        <button type="submit">Очистить историю покупок</button><br><br>
-    </form>
-    <br><br>
-    <hr>
+    <div class="header">
+        <h1>Revolver Marry Walker</h1>
+        <a href="{{url_for('profile')}}" class="nav-link">Вернуться в профиль</a>
+    </div>
 
-    {% for purchase, product in purchases %}
-    <div class="purchase-item">
-        <img src="data:image/*;base64,{{ product.avatar }}" width="100">
-        <p>{{ product.title }}</p>
-        <p>Количество куплено: {{ purchase.count }}шт</p>
-        <p>Сумма: {{ purchase.spent }}р</p>  
-        <p>Дата покупки {{purchase.join}}</p>
+    <h2>История покупок</h2>
 
+    <div class="warning">
+        При уменьшения количества купленного товара или при очищение истории покупок, количество купленных товаров в профиле сбрасывается!
+    </div>
+
+    <div class="clear-form">
         <form action="/delete_history_product" method="post">
             <input type="hidden" name="csrf_token" value="{{csrf_token()}}">
-            <input type="hidden" name="pursh_product_id" value="{{purchase.id}}">
-            <input type="hidden" name="method" value="one_delete">
-            <button type="submit">Удалить</button>
-
-        
-         
+            <input type="hidden" name="method" value="all_delete">
+            <button type="submit">Очистить историю покупок</button>
+        </form>
     </div>
+
     <hr>
-{% else %}
-    <p>😔 История покупок пуста</p>
-{% endfor %}
+
+    {% if purchases %}
+        <div class="purchases-grid">
+            {% for purchase, product in purchases %}
+                <div class="purchase-item">
+                    <img src="data:image/*;base64,{{ product.avatar }}" alt="{{ product.title }}">
+                    <div class="title">{{ product.title }}</div>
+                    <p>Количество куплено: {{ purchase.count }}шт</p>
+                    <p>Сумма: {{ purchase.spent }}р</p>  
+                    <p>Дата покупки: {{ purchase.join }}</p>
+
+                    <div class="delete-form">
+                        <form action="/delete_history_product" method="post">
+                            <input type="hidden" name="csrf_token" value="{{csrf_token()}}">
+                            <input type="hidden" name="pursh_product_id" value="{{purchase.id}}">
+                            <input type="hidden" name="method" value="one_delete">
+                            <button type="submit">Удалить</button>
+                        </form>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="empty-message">😔 История покупок пуста</div>
+    {% endif %}
 </body>
 </html>
